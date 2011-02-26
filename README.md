@@ -16,7 +16,7 @@
 <p>Event objects passed to the bound handlers are augmented with the properties:</p>
 
 <dl>
-  <dt>pageX, pageY</dt><dd>Current page coordinates of pointer.</dd>
-  <dt>startX, startY</dt><dd>Page coordinates of pointer at movestart.</dd>
-  <dt>deltaX, deltaY</dt><dd>Distance the pointer has moved since movestart.</dd>
+  <dt>e.pageX<br/>e.pageY</dt><dd>Current page coordinates of pointer.</dd>
+  <dt>e.startX<br/>e.startY</dt><dd>Page coordinates of pointer at movestart.</dd>
+  <dt>e.deltaX<br/>e.deltaY</dt><dd>Distance the pointer has moved since movestart.</dd>
 </dl>
