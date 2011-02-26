@@ -1,6 +1,6 @@
 <h2>jquery.events.move</h2>
 
-<p>Provides custom events 'movestart', 'move' and 'moveend'. These events behave in a similar way to 'dragstart', 'drag' and 'dragend', although clearly they don't use the drag and drop API.</p>
+<p>Provides custom events 'movestart', 'move' and 'moveend'. These events behave in a similar way to 'dragstart', 'drag' and 'dragend', but are intended for building interaction that moves within the DOM.</p>
 
 <h3>movestart</h3>
 <p>Fired following mousedown, after mousemoves cross a threshold distance from the position of the mousedown.</p>

@@ -150,10 +150,10 @@
 		delete special.moveend.setup;
 		
 		jQuery(this)
-		.bind('mousedown', mousedown)
+		.bind('mousedown.move', mousedown)
 		
 		// Stop the node from being dragged
-		.bind('dragstart drag', preventDefault);
+		.bind('dragstart.move drag.move', preventDefault);
 	}
 	
 	function teardown( namespaces ) {
