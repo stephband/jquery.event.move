@@ -18,11 +18,9 @@
 // deltaY:	Distance the pointer has moved since movestart.
 
 
-// TODO: I'm wondering if the bindings for move and move shouldn't happen as the _default of
+// TODO: I'm wondering if the bindings for movestart and move shouldn't happen as the _default of
 // movestart, so that then they are cancelled in a jQuery way, instead of with my silly 
 // callback at line 104.
-
-
 
 
 (function(jQuery, undefined){
@@ -89,7 +87,17 @@
 			// Check if the threshold has been crossed
 			if ((delta.x * delta.x) + (delta.y * delta.y) < (threshold * threshold)) { return; }
 			
-			// If it has, rewrite this function
+			// Trigger the movestart event
+			elem.trigger('movestart', [e, eMousedown, {x: 0, y: 0}, function(){
+				// This callback is fired if e.preventDefault() is called on
+				// the movestart event object.
+				defaultPrevented = true;
+				mouseup();
+			}]);
+			
+			if (defaultPrevented) { return; }
+			
+			// Rewrite this function
 			triggerEvents = function(e, delta, threshold) {
 			  // Store latest values to be used by the update
 			  obj = e;
@@ -99,22 +107,12 @@
 			  timer.kick();
 			};
 			
-			// Trigger the initial move events
-			elem.triggerHandler('movestart', [e, eMousedown, {x: 0, y: 0}, function(){
-				// This callback is fired if e.preventDefault() is called on
-				// the movestart event object.
-				defaultPrevented = true;
-				mouseup();
-			}]);
-			
-			if (defaultPrevented) { return; }
-			
 			// Register the update with the frame timer
 			timer = new Timer(function(time){
-				elem.triggerHandler('move', [obj, eMousedown, d]);
+				elem.trigger('move', [obj, eMousedown, d]);
 			});
 			
-			elem.triggerHandler('move', [e, eMousedown, delta]);
+			elem.trigger('move', [e, eMousedown, delta]);
 			
 			// Bind the handler that will trigger moveend
 			doc.bind('mouseup', mouseupend);
@@ -141,7 +139,7 @@
 						y: e.pageY - eMousedown.pageY
 					};
 			
-			elem.triggerHandler('moveend', [e, eMousedown, delta]);
+			elem.trigger('moveend', [e, eMousedown, delta]);
 			timer.stop();
 			doc.unbind('mouseup', mouseupend);
 		}
@@ -217,7 +215,16 @@
 	
 	// DEFINE EVENTS
 	
-	jQuery.event.special.movestart =
+	jQuery.event.special.movestart = {
+		setup: setup,
+		teardown: teardown,
+		add: add,
+		_default: function(e, f, g, h){
+		  // TODO: This is where the mousemove and mouseup shit
+		  // should be bound.
+		}
+	};
+	
 	jQuery.event.special.move =
 	jQuery.event.special.moveend = {
 		setup: setup,
