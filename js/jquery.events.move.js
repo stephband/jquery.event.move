@@ -154,12 +154,15 @@
 	}
 	
 	function setup( data, namespaces, eventHandle ) {
-		var special = jQuery.event.special;
+		var elem = jQuery(this),
+				events = elem.data('events'),
+				special = jQuery.event.special;
 		
-		// Setup just once for all three events.
-		delete special.movestart.setup;
-		delete special.move.setup;
-		delete special.moveend.setup;
+		// If another move event is already setup,
+		// don't setup again.
+		if (((events.movestart ? 1 : 0) +
+				 (events.move ? 1 : 0) +
+				 (events.moveend ? 1 : 0)) > 1) { return; }
 		
 		jQuery(this)
 		.bind('mousedown.move', mousedown)
