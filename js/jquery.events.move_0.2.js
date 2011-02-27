@@ -1,6 +1,6 @@
 // jquery.events.move
 // 
-// 0.3
+// 0.2
 // 
 // Stephen Band
 // 
@@ -16,13 +16,6 @@
 // startY:	Page coordinates of pointer at movestart.
 // deltaX:
 // deltaY:	Distance the pointer has moved since movestart.
-
-
-// TODO: I'm wondering if the bindings for move and move shouldn't happen as the _default of
-// movestart, so that then they are cancelled in a jQuery way, instead of with my silly 
-// callback at line 104.
-
-
 
 
 (function(jQuery, undefined){
@@ -81,9 +74,10 @@
 	
 	// FUNCTIONS
 	
-	function mousedown(eMousedown){
+	function mousedown(e){
 		var elem = jQuery(this),
-				obj, d, timer, defaultPrevented;
+				start = { x: e.pageX, y: e.pageY },
+				obj, d, timer;
 		
 		function triggerEvents(e, delta, threshold){
 			// Check if the threshold has been crossed
@@ -99,22 +93,14 @@
 			  timer.kick();
 			};
 			
-			// Trigger the initial move events
-			elem.triggerHandler('movestart', [e, eMousedown, {x: 0, y: 0}, function(){
-				// This callback is fired if e.preventDefault() is called on
-				// the movestart event object.
-				defaultPrevented = true;
-				mouseup();
-			}]);
-			
-			if (defaultPrevented) { return; }
-			
 			// Register the update with the frame timer
 			timer = new Timer(function(time){
-				elem.triggerHandler('move', [obj, eMousedown, d]);
+				elem.triggerHandler('move', [obj, start, d]);
 			});
 			
-			elem.triggerHandler('move', [e, eMousedown, delta]);
+			// Trigger the initial move events
+			elem.triggerHandler('movestart', [e, start, {x: 0, y: 0}]);
+			elem.triggerHandler('move', [e, start, delta]);
 			
 			// Bind the handler that will trigger moveend
 			doc.bind('mouseup', mouseupend);
@@ -122,8 +108,8 @@
 		
 		function mousemove(e){
 			var delta = {
-						x: e.pageX - eMousedown.pageX,
-						y: e.pageY - eMousedown.pageY
+						x: e.pageX - start.x,
+						y: e.pageY - start.y
 					};
 			
 			triggerEvents(e, delta, threshold);
@@ -137,11 +123,11 @@
 		
 		function mouseupend(e) {
 			var delta = {
-						x: e.pageX - eMousedown.pageX,
-						y: e.pageY - eMousedown.pageY
+						x: e.pageX - start.x,
+						y: e.pageY - start.y
 					};
 			
-			elem.triggerHandler('moveend', [e, eMousedown, delta]);
+			elem.triggerHandler('moveend', [e, start, delta]);
 			timer.stop();
 			doc.unbind('mouseup', mouseupend);
 		}
@@ -193,22 +179,13 @@
 	function add(handleObj) {
 	  var handler = handleObj.handler;
 	  
-	  handleObj.handler = function(e, eCurrent, eMousedown, delta, fn) {
-	  	var oldPreventDefault = e.preventDefault;
-	  	
+	  handleObj.handler = function(e, obj, start, delta) {
 	  	e.deltaX = delta.x;
 	  	e.deltaY = delta.y;
-	  	e.startX = eMousedown.pageX;
-	  	e.startY = eMousedown.pageY;
-	  	e.pageX = eCurrent.pageX;
-	  	e.pageY = eCurrent.pageY;
-	  	e.target = eMousedown.target;
-	  	
-	  	// TODO: This isn't really the right way to do this
-	  	e.preventDefault = function(){
-	  	  oldPreventDefault.call(e);
-	  	  fn && fn();
-	  	};
+	  	e.startX = start.x;
+	  	e.startY = start.y;
+	  	e.pageX = obj.pageX;
+	  	e.pageY = obj.pageY;
 	  	
 	  	// Call the originally-bound event handler and return its result.
 	  	return handler.apply(this, arguments);
