@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+	<meta charset="utf-8" />
+	
+	<!-- Make IE recognise HTML5 elements (for styling - must stay in the head, before elements are used) -->
+	<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	
+	<title>Title</title>
+	
+	<link rel="icon" type="image/png" href="images/favicon.png" />
+	
+	<style>
+		.test {
+			position: absolute;
+			left: 0;
+			top: 0;
+			background-color: red;
+			width: 200px;
+			height: 200px;
+		}
+		.resize, .rotate {
+		  position: absolute;
+		  width: 20px;
+		  height: 20px;
+		}
+		
+		.resize {
+		  bottom: 10px;
+		  right: 10px;
+		  background: yellow;
+		}
+		
+		.rotate {
+		  top: 10px;
+		  right: 10px;
+		  background: orange;
+		}
+		
+		.centre_mark,
+		.origin_mark,
+		.phantom_mark {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background: orange;
+			width: 8px;
+			height: 8px;
+			margin-left: -4px;
+			margin-top: -4px;
+			-webkit-border-radius: 4px;
+			   -moz-border-radius: 4px;
+			        border-radius: 4px;
+			line-height: 8px;
+			text-transform: uppercase;
+			font-size: 10px;
+			font-family: Helvetica;
+			color: rgba(128,128,128,0.6);
+			text-indent: 8px;
+			border: 1px solid black;
+		}
+		
+		.origin_mark {
+			background: rgba(128,128,128,0.6);
+		}
+
+		.phantom_mark {
+			background: rgba(128,128,128,0.6);
+		}
+	</style>
+
+</head>
+
+<body>
+	
+	<div class="test">
+	 <div class="resize"></div>
+	 <div class="rotate"></div>
+	</div>
+	
+	<div class="centre_mark"></div>
+	<div class="origin_mark"></div>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
+	<script src="js/jquery.events.move.js"></script>
+	<script type="text/javascript">
+
+		Number.prototype.deg = function() { return this * 57.295779513; }
+		Number.prototype.rad = function() { return this / 57.295779513; }
+		Number.prototype.limit = function(min, max) { return this > max ? max : this < min ? min : this ; }
+		Number.prototype.wrap = function(min, max) { return (this < min ? max : min) + (this - min) % (max - min); }
+
+		// FUNCTIONS
+		
+		// Converts cartesian [x, y] to polar [distance, angle] coordinates,
+		// downward, anti-clockwise, angle in radians.
+		
+		var pi = Math.PI,
+				pi2 = pi * 2;
+		
+		function toPolar(cart) {
+			var x = cart[0],
+					y = cart[1];
+			
+			// Detect quadrant and work out vector
+			if (y === 0) 	{ return x === 0 ? [0, 0] : x > 0 ? [x, 0.5 * pi] : [-x, 1.5 * pi] ; }
+			if (y < 0) 		{ return x === 0 ? [-y, pi] : [Math.sqrt(x*x + y*y), Math.atan(x/y) + pi] ; }
+			if (y > 0) 		{ return x === 0 ? [y, 0] : [Math.sqrt(x*x + y*y), (x > 0) ? Math.atan(x/y) : pi2 + Math.atan(x/y)] ; }
+		}
+		
+		// Converts [distance, angle] vector to cartesian [x, y] coordinates.
+		
+		function toCartesian(vect) {
+			var d = vect[0],
+					a = vect[1];
+			
+			// Work out cartesian coordinates
+			return [ Math.sin(a) * d, Math.cos(a) * d ];
+		}
+		
+		// log event objects
+		
+		function logEvent(e){ console.log(e.type, e); }
+		
+		jQuery(document)
+		.bind('mousedown mouseup', logEvent)
+		.ready(function(){
+			var start,
+					box = jQuery('.test'),
+					resize = jQuery('.resize'),
+					rotate = jQuery('.rotate'),
+					centreMark = jQuery('.centre_mark'),
+					originMark = jQuery('.origin_mark');
+			
+			// Test setup and teardown wit multiple binds and unbinds...
+			
+			box
+			.bind('movestart move moveend', logEvent)
+			.unbind('movestart')
+			.unbind('move')
+			.unbind('moveend')
+			//.bind('movestart move moveend', logEvent)
+			.bind('movestart', function(e){
+				if (e.target == e.currentTarget) {
+					start = {
+					  x: parseInt(box.css('left')),
+					  y: parseInt(box.css('top'))
+					};
+				}
+			})
+			.bind('move', function(e){
+				if (e.target == e.currentTarget) {
+					box.css({
+						left: start.x + e.deltaX,
+						top: start.y + e.deltaY
+					});
+					
+					// Guides
+					
+					originMark.css({
+						left: start.x + e.deltaX,
+						top: start.y + e.deltaY
+					});
+					
+					centreMark.css({
+						left: start.x + e.deltaX + box.width()/2,
+						top: start.y + e.deltaY + box.height()/2
+					});
+				}
+			});
+			
+			var rotation = 0;
+			
+			(function(){
+				var start, rotatedOrigin, deltaX, deltaY;
+				
+				resize
+				.bind('movestart', function(e){
+					var polarOrigin;
+					
+					start = {
+						left: parseInt(box.css('left')),
+						top: parseInt(box.css('top')),
+					  width: box.width(),
+					  height: box.height()
+					};
+				})
+				.bind('move', function(e){
+					var polarDelta = toPolar([e.deltaX, e.deltaY]),
+							normalisedDelta, originDelta, width, height;
+					
+					// Comments are useless. I can't describe what's going
+					// on here without a pencil and paper. Sorry, but basically,
+					// we're undoing the rotate transform to work out where
+					// the rotated origin lies.
+					polarDelta[1] += rotation.rad();
+					normalisedDelta = toCartesian(polarDelta);
+					
+					width = start.width + normalisedDelta[0];
+					height = start.height + normalisedDelta[1];
+					
+					width = width >= 0 ? width : 0;
+					height = height >= 0 ? height : 0;
+					
+					originDelta = [
+						e.deltaX/2 - (width === 0 ? -start.width/2 : normalisedDelta[0]/2),
+						e.deltaY/2 - (height === 0 ? -start.height/2 : normalisedDelta[1]/2)
+					];
+					
+					box.css({
+						left: start.left + originDelta[0],
+						top: start.top + originDelta[1],
+						width: width,
+						height: height
+					});
+					
+					// Guides
+					
+					originMark.css({
+						left: start.left + originDelta[0],
+						top: start.top + originDelta[1]
+					});
+					
+					centreMark.css({
+						left: start.left + originDelta[0] + width/2,
+						top: start.top + originDelta[1] + height/2
+					})
+				});
+			})();
+			
+			(function(){
+				var centre, startRotate, startAngle;
+				
+				rotate
+				.bind('movestart', function(e){
+					
+					centre = {
+					  x: parseInt(box.css('left')) + box.width()/2,
+					  y: parseInt(box.css('top')) + box.height()/2
+					};
+					
+					startRotate = rotation;
+					startAngle = toPolar([e.pageX - centre.x, e.pageY - centre.y])[1];
+					
+					// Guides
+					
+					originMark.css({
+						left: box.css('left'),
+						top: box.css('top')
+					});
+					
+					centreMark.css({
+						left: centre.x,
+						top: centre.y
+					});
+				})
+				.bind('move', function(e){
+					var nowAngle = toPolar([e.pageX - centre.x, e.pageY - centre.y])[1],
+							deltaRotate = nowAngle - startAngle,
+							transform;
+					
+					rotation = parseInt(startRotate - deltaRotate.deg());
+					transform = 'rotate(' + rotation + 'deg)';
+					
+					box.css({
+						transform: transform,
+						WebkitTransform: transform,
+						MozTransform: transform
+					});
+				});
+			})();
+		});
+	</script>
+</body>
+</html>
