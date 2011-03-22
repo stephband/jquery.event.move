@@ -68,21 +68,20 @@
 		this.end = function(fn) {
 			var cb = callback;
 			
-			// If the timer is not running, we want to call just
-			// the end callback
+			if (!fn) { return; }
+			
+			// If the timer is not running, simply call the end callback.
 			if (!running) {
-				fn && fn();
+				fn();
 			}
-			else if (active) {
-				if (fn) {
-					callback = function(){
-						cb();
-						fn();
-					};
-				}
-			}
+			// If the timer is running, and has been kicked lately, then
+			// queue up the current callback and the end callback, otherwise
+			// just the end callback.
 			else {
-				callback = fn || function(){};
+				callback = active ?
+					function(){ cb(); fn(); } : 
+					fn ;
+				
 				active = true;
 			}
 		}
