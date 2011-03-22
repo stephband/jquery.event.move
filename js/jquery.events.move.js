@@ -1,6 +1,6 @@
 // jquery.events.move
 // 
-// 0.3
+// 0.4
 // 
 // Stephen Band
 // 
@@ -8,7 +8,7 @@
 // mousemoves following a mousedown cross a distance threshold,
 // similar to the native 'dragstart', 'drag' and 'dragend' events.
 // Move events are throttled to animation frames. Event objects
-// passed to the bound handlers are augmented with the properties:
+// passed to handlers have the properties:
 // 
 // pageX:
 // pageY:		Page coordinates of pointer.
@@ -17,19 +17,11 @@
 // deltaX:
 // deltaY:	Distance the pointer has moved since movestart.
 
-
-// TODO: I'm wondering if the bindings for movestart and move shouldn't happen as the _default of
-// movestart, so that then they are cancelled in a jQuery way, instead of with my silly 
-// callback at line 104.
-
-
 (function(jQuery, undefined){
 	
-	var doc = jQuery(document),
+	var doc = jQuery(document)
 			
-			// Number of pixels moved before 'move' events are started
-			
-			threshold = 4,
+			threshold = 6,
 			
 			// Shim for requestAnimationFrame, falling back to timer. See:
 			// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -43,120 +35,165 @@
 					window.msRequestAnimationFrame ||
 					function(fn, element){
 						return window.setTimeout(function(){
-							fn(+new Date);
-						}, 25);
+							fn(+new Date());
+						}, 100);
 					}
 				);
 			})();
 	
-	// CONSTRUCTOR
+	// CONSTRUCTORS
 	
 	function Timer(fn){
-		var self = this,
-				active = false;
+		var callback = fn,
+				active = false,
+				running = false;
 		
-		this.start = function timer(time){
-			// If the timer has been kicked since
-			// it was last queued, set it off again.
-			if ( active ) {
-				fn();
+		function trigger(time) {
+			if (active){
+				console.log(time);
+				callback();
+				requestFrame(trigger);
+				running = true;
 				active = false;
-				requestFrame(timer);
+			}
+			else {
+				running = false;
 			}
 		};
 		
-		this.stop = function(){
-			active = false;
+		this.kick = function(fn) {
+			active = true;
+			if (!running) { trigger(+new Date()); }
 		};
 		
-		this.kick = function(){
-			var a = active;
+		this.end = function(fn) {
+			var cb = callback;
 			
-			active = true;
-			if (!a) { this.start(); }
-		};
+			// If the timer is not running, we want to call just
+			// the end callback
+			if (!running) {
+				fn && fn();
+			}
+			else if (active) {
+				if (fn) {
+					callback = function(){
+						cb();
+						fn();
+					};
+				}
+			}
+			else {
+				callback = fn || function(){};
+				active = true;
+			}
+		}
 	}
 	
 	// FUNCTIONS
 	
-	function mousedown(eMousedown){
-		var elem = jQuery(this),
-				obj, d, timer, defaultPrevented;
+	function mousedown(e){
+		doc
+		.bind('mousemove', e, mousemove)
+		.bind('mouseup', mouseup);
+	}
+	
+	function mousemove(e){
+		var node = e.target,
+				o = e.data,
+				deltaX = e.pageX - o.pageX,
+				deltaY = e.pageY - o.pageY,
+				elem, data;
 		
-		function triggerEvents(e, delta, threshold){
-			// Check if the threshold has been crossed
-			if ((delta.x * delta.x) + (delta.y * delta.y) < (threshold * threshold)) { return; }
-			
-			// Trigger the movestart event
-			elem.trigger('movestart', [e, eMousedown, {x: 0, y: 0}, function(){
-				// This callback is fired if e.preventDefault() is called on
-				// the movestart event object.
-				defaultPrevented = true;
-				mouseup();
-			}]);
-			
-			if (defaultPrevented) { return; }
-			
-			// Rewrite this function
-			triggerEvents = function(e, delta, threshold) {
-			  // Store latest values to be used by the update
-			  obj = e;
-			  d = delta;
-			  
-			  // Start or continue the frame timer
-			  timer.kick();
-			};
-			
-			// Register the update with the frame timer
-			timer = new Timer(function(time){
-				elem.trigger('move', [obj, eMousedown, d]);
-			});
-			
-			elem.trigger('move', [e, eMousedown, delta]);
-			
-			// Bind the handler that will trigger moveend
-			doc.bind('mouseup', mouseupend);
-		}
+		// Do nothing if the threshold has not been crossed
+		if ((deltaX * deltaX) + (deltaY * deltaY) < (threshold * threshold)) { return; }
 		
-		function mousemove(e){
-			var delta = {
-						x: e.pageX - eMousedown.pageX,
-						y: e.pageY - eMousedown.pageY
-					};
+		// Climb the parents of this target.
+		while (node !== document.documentElement) {
+			elem = jQuery(node);
+			data = elem.data('events');
 			
-			triggerEvents(e, delta, threshold);
-		}
-		
-		function mouseup(e){
-			doc
-			.unbind('mousemove', mousemove)
-			.unbind('mouseup', mouseup);
-		}
-		
-		function mouseupend(e) {
-			var delta = {
-						x: e.pageX - eMousedown.pageX,
-						y: e.pageY - eMousedown.pageY
-					};
+			// Test to see if one of the move events has been bound.
+			if (data && (data.movestart || data.move || data.moveend)) {
+				
+				elem.trigger({
+					type: 'movestart',
+					pageX: e.pageX,
+					pageY: e.pageY,
+					startX: o.pageX,
+					startY: o.pageY,
+					deltaX: deltaX,
+					deltaY: deltaY
+				});
+				
+				// Note: If movestart is not cancelled, its' functions are
+				// bound to doc. By unbinding this function after the trigger,
+				// we avoid calling teardown of the mousemove handler(s).
+				
+				doc
+				.unbind('mousemove', mousemove)
+				.unbind('mouseup', mouseup);
+				
+				return;
+			}
 			
-			elem.trigger('moveend', [e, eMousedown, delta]);
-			timer.stop();
-			doc.unbind('mouseup', mouseupend);
+			node = node.parentNode;
 		}
+	}
+	
+	function mouseup(e) {
+	  doc
+	  .unbind('mousemove', mousemove)
+	  .unbind('mouseup', mouseup);
+	}
+	
+	
+	// !--
+	
+	function activeMousemove(e) {
+		var obj = e.data.obj,
+				timer = e.data.timer;
+		
+		obj.pageX = e.pageX;
+		obj.pageY = e.pageY;
+		obj.deltaX = e.pageX - obj.startX;
+		obj.deltaY = e.pageY - obj.startY;
+		
+		timer.kick();
+	}
+	
+	function activeMouseup(e) {
+		var target = e.data.target,
+				obj = e.data.obj,
+				timer = e.data.timer;
 		
 		doc
-		.bind('mousemove', mousemove)
-		.bind('mouseup', mouseup);
-	};
+		.unbind('mousemove', activeMousemove)
+		.unbind('mouseup', activeMouseup);
+		
+		obj.pageX = e.pageX;
+		obj.pageY = e.pageY;
+		obj.deltaX = e.pageX - obj.startX;
+		obj.deltaY = e.pageY - obj.startY;
+		
+		timer.end(function(){
+			obj.type = 'moveend';
+			target
+			.trigger(obj)
+			.unbind('click', returnFalse);
+		});
+	}
+	
+	function returnFalse(e) {
+		return false;
+	}
 	
 	function preventDefault(e){
-		e.target === e.currentTarget && e.preventDefault();
+		e.preventDefault();
 	}
 	
 	function setup( data, namespaces, eventHandle ) {
 		var elem = jQuery(this),
-				events = elem.data('events'),
-				special = jQuery.event.special;
+				events = elem.data('events');
 		
 		// If another move event is already setup,
 		// don't setup again.
@@ -164,17 +201,13 @@
 				 (events.move ? 1 : 0) +
 				 (events.moveend ? 1 : 0)) > 1) { return; }
 		
-		jQuery(this)
-		.bind('mousedown.move', mousedown)
-		
-		// Stop the node from being dragged
-		.bind('dragstart.move drag.move', preventDefault);
+		// Prevent text selection and stop the node from being dragged.
+		jQuery(this).bind('mousedown.move dragstart.move drag.move', preventDefault);
 	}
 	
 	function teardown( namespaces ) {
 		var elem = jQuery(this),
-				events = elem.data('events'),
-				special = jQuery.event.special;
+				events = elem.data('events');
 		
 		// If another move event is still setup,
 		// don't teardown just yet.
@@ -182,57 +215,53 @@
 				 (events.move ? 1 : 0) +
 				 (events.moveend ? 1 : 0)) > 1) { return; }
 		
-		special.movestart.setup = setup;
-		special.move.setup = setup;
-		special.moveend.setup = setup;
-		
-		elem
-		.unbind('mousedown', mousedown)
-		.unbind('dragstart drag', preventDefault);
+		jQuery(this).unbind('mousedown dragstart drag', preventDefault);
 	}
 	
-	function add(handleObj) {
-	  var handler = handleObj.handler;
-	  
-	  handleObj.handler = function(e, eCurrent, eMousedown, delta, fn) {
-	  	var oldPreventDefault = e.preventDefault;
-	  	
-	  	e.deltaX = delta.x;
-	  	e.deltaY = delta.y;
-	  	e.startX = eMousedown.pageX;
-	  	e.startY = eMousedown.pageY;
-	  	e.pageX = eCurrent.pageX;
-	  	e.pageY = eCurrent.pageY;
-	  	e.target = eMousedown.target;
-	  	
-	  	// TODO: This isn't really the right way to do this
-	  	e.preventDefault = function(){
-	  	  oldPreventDefault.call(e);
-	  	  fn && fn();
-	  	};
-	  	
-	  	// Call the originally-bound event handler and return its result.
-	  	return handler.apply(this, arguments);
-	  };
-	}
 	
-	// DEFINE EVENTS
+	// THE MEAT AND POTATOES
+	
+	doc.bind('mousedown.move', mousedown);
 	
 	jQuery.event.special.movestart = {
 		setup: setup,
 		teardown: teardown,
-		add: add,
-		_default: function(e, f, g, h){
-		  // TODO: This is where the mousemove and mouseup shit
-		  // should be bound.
+		_default: function(e) {
+			var target = jQuery(e.target),
+					obj = {
+						type: 'move',
+				  	startX: e.startX,
+				  	startY: e.startY,
+				  	deltaX: e.pageX - e.startX,
+				  	deltaY: e.pageY - e.startY
+					},
+					timer = new Timer(function(time){
+						target.trigger(obj);
+					}),
+					data = {
+						target: target,
+						obj: obj,
+						timer: timer
+					};
+			
+			// Stop clicks from propagating.
+			target
+			.bind('click', returnFalse);
+			
+			// Track mouse events.
+			doc
+			.bind('mousemove.move', data, activeMousemove)
+			.bind('mouseup.move', data, activeMouseup);
 		}
 	};
 	
-	jQuery.event.special.move =
-	jQuery.event.special.moveend = {
+	jQuery.event.special.move = {
 		setup: setup,
-		teardown: teardown,
-		add: add
+		teardown: teardown
 	};
 	
+	jQuery.event.special.moveend = {
+		setup: setup,
+		teardown: teardown
+	};
 })(jQuery);
