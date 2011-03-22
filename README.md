@@ -5,7 +5,7 @@ to 'dragstart', 'drag' and 'dragend', but are intended for building interaction 
 by position only within the DOM. Move events are throttled to fire on animation frames.</p>
 
 <h3>movestart</h3>
-<p>Fired following mousedown, after mousemoves cross a threshold distance from the position of the mousedown.</p>
+<p>Fired following mousedown, after mousemoves cross a threshold distance from the position of the mousedown. From now until moveend, clicks do not propagate (but if there are click handlers bound to this node they will still fire).</p>
 
 <h3>move</h3>
 <p>Fired on every animation frame where a mousemove has changed the cursor position.</p>

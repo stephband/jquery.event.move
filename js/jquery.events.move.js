@@ -89,6 +89,14 @@
 	
 	// FUNCTIONS
 	
+	function returnFalse(e) {
+		return false;
+	}
+	
+	function preventDefault(e){
+		e.preventDefault();
+	}
+	
 	function mousedown(e){
 		doc
 		.bind('mousemove', e, mousemove)
@@ -144,9 +152,6 @@
 	  .unbind('mouseup', mouseup);
 	}
 	
-	
-	// !--
-	
 	function activeMousemove(e) {
 		var obj = e.data.obj,
 				timer = e.data.timer;
@@ -176,18 +181,14 @@
 		timer.end(function(){
 			obj.type = 'moveend';
 			
-			target
-			.trigger(obj)
-			.unbind('click', returnFalse);
+			target.trigger(obj);
+			
+			// Unbind the click suppressor, waiting until after mouseup
+			// has been handled.
+			setTimeout(function(){
+				target.unbind('click', returnFalse);
+			}, 0);
 		});
-	}
-	
-	function returnFalse(e) {
-		return false;
-	}
-	
-	function preventDefault(e){
-		e.preventDefault();
 	}
 	
 	function setup( data, namespaces, eventHandle ) {
