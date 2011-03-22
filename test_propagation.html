@@ -51,12 +51,6 @@
 		</div>
 	</div>
 	
-	<h1>How do you make special events bubble just once?</h1>
-	<p>The 'quack' event is an event whose handler is triggered on every click. The handler is triggered with .trigger(), because the 'quack' event should bubble.</p>
-	<p>In the above example, the special 'quack' event is bound to both the inner and the outer divs. If you click the outer div you can see in your console.log that the event is fired, and that the event's _default method is called.</p>
-	<p>If you click the inner div, the 'quack' event gets fired twice - once when it detects the click on the inner div, and once when it detects the click on the outer div. Two events are created from one click, and quack's _default handler is fired twice.</p>
-	<p>What is a good strategy for generating only one 'quack' event per click, still having the quack binding on the outer div 'hear' it, and firing the _default handler only once?</p>
-	
 	<!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script-->
 	<script src="js/jquery-1.5.2.js"></script>
 	<script src="js/jquery.events.move.js"></script>
