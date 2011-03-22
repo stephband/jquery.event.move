@@ -1,6 +1,8 @@
 <h2>jquery.events.move</h2>
 
-<p>Provides custom events 'movestart', 'move' and 'moveend'. These events behave in a similar way to 'dragstart', 'drag' and 'dragend', but are intended for building interaction that moves nodes by position only within the DOM.</p>
+<p>Provides custom events 'movestart', 'move' and 'moveend'. These events behave in a similar way
+to 'dragstart', 'drag' and 'dragend', but are intended for building interaction that moves nodes
+by position only within the DOM. Move events are throttled to fire on animation frames.</p>
 
 <h3>movestart</h3>
 <p>Fired following mousedown, after mousemoves cross a threshold distance from the position of the mousedown.</p>
@@ -17,6 +19,6 @@
 
 <dl>
   <dt>e.pageX<br/>e.pageY</dt><dd>Current page coordinates of pointer.</dd>
-  <dt>e.startX<br/>e.startY</dt><dd>Page coordinates of pointer at movestart.</dd>
+  <dt>e.startX<br/>e.startY</dt><dd>Page coordinates the pointer had at movestart.</dd>
   <dt>e.deltaX<br/>e.deltaY</dt><dd>Distance the pointer has moved since movestart.</dd>
 </dl>

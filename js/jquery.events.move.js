@@ -36,7 +36,7 @@
 					function(fn, element){
 						return window.setTimeout(function(){
 							fn(+new Date());
-						}, 100);
+						}, 25);
 					}
 				);
 			})();
@@ -50,7 +50,6 @@
 		
 		function trigger(time) {
 			if (active){
-				console.log(time);
 				callback();
 				requestFrame(trigger);
 				running = true;
@@ -98,8 +97,8 @@
 	}
 	
 	function mousemove(e){
-		var node = e.target,
-				o = e.data,
+		var o = e.data,
+				node = o.target,
 				deltaX = e.pageX - o.pageX,
 				deltaY = e.pageY - o.pageY,
 				elem, data;
@@ -177,6 +176,7 @@
 		
 		timer.end(function(){
 			obj.type = 'moveend';
+			
 			target
 			.trigger(obj)
 			.unbind('click', returnFalse);
@@ -244,11 +244,11 @@
 						timer: timer
 					};
 			
-			// Stop clicks from propagating.
+			// Stop clicks from propagating during a move
 			target
 			.bind('click', returnFalse);
 			
-			// Track mouse events.
+			// Track mouse events
 			doc
 			.bind('mousemove.move', data, activeMousemove)
 			.bind('mouseup.move', data, activeMouseup);
