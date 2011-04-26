@@ -19,9 +19,9 @@
 
 (function(jQuery, undefined){
 	
-	var doc = jQuery(document)
+	var doc = jQuery(document),
 			
-			threshold = 6,
+			threshold = 1,
 			
 			// Shim for requestAnimationFrame, falling back to timer. See:
 			// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -98,9 +98,16 @@
 	}
 	
 	function mousedown(e){
+		// Don't respond to mousedown on editable nodes
+		// TODO: Improve! Write a test.
+		if (e.target.tagName.toLowerCase() === "textarea" || e.target.tagName.toLowerCase() === "input") { return; }
+		
 		doc
 		.bind('mousemove', e, mousemove)
-		.bind('mouseup', mouseup);
+		// Bind the unbinders to both mouseup and dragend. FF fails to
+		// send a mouseup after a dragged node has been dropped, so we
+		// have to listen to dragend.
+		.bind('mouseup dragend', mouseup);
 	}
 	
 	function mousemove(e){
@@ -149,7 +156,7 @@
 	function mouseup(e) {
 	  doc
 	  .unbind('mousemove', mousemove)
-	  .unbind('mouseup', mouseup);
+	  .unbind('mouseup dragend', mouseup);
 	}
 	
 	function activeMousemove(e) {
@@ -202,7 +209,9 @@
 				 (events.moveend ? 1 : 0)) > 1) { return; }
 		
 		// Prevent text selection and stop the node from being dragged.
-		jQuery(this).bind('mousedown.move dragstart.move drag.move', preventDefault);
+		// TODO: Investigate, because text selection occurs in one browser
+		// and not another. Before, we had mousedown in this list.
+		jQuery(this).bind('dragstart.move drag.move', preventDefault);
 	}
 	
 	function teardown( namespaces ) {
