@@ -34,10 +34,27 @@
 
 <body>
 	<header>
-		<h1>jQuery.event.move</h1></h1>
+		<h1>Move test</h1>
+		<p>What happens when we bind movestart, move and moveend events to a div?</p>
+		<p>Are there any arrors?</p>
+		<p>Does text get selected?</p>
+		<p>Can you still interact with form elements inside the div?</p>
 	</header>
 	
-	<div class="first_test test"></div>
+	<div class="first_test test">
+	</div>
+	
+	<div class="second_test test">
+		<textarea>Textarea</textarea>
+		
+		<select>
+		  <option>blue</option>
+		  <option>green</option>
+		  <option>red</option>
+		</select>
+		
+		<input value="Input" />
+	</div>
 	
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
 	<script src="js/jquery.events.move.js"></script>

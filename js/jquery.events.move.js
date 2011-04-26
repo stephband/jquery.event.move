@@ -39,7 +39,13 @@
 						}, 25);
 					}
 				);
-			})();
+			})(),
+			
+			ignoreTags = {
+				textarea: true,
+				input: true,
+				select: true
+			};
 	
 	// CONSTRUCTORS
 	
@@ -94,19 +100,21 @@
 	}
 	
 	function preventDefault(e){
+		// Don't prevent interaction with form elements.
+		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
+		
 		e.preventDefault();
 	}
 	
 	function mousedown(e){
-		// Don't respond to mousedown on editable nodes
-		// TODO: Improve! Write a test.
-		if (e.target.tagName.toLowerCase() === "textarea" || e.target.tagName.toLowerCase() === "input") { return; }
+		// Don't prevent interaction with form elements.
+		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 		
 		doc
 		.bind('mousemove', e, mousemove)
 		// Bind the unbinders to both mouseup and dragend. FF fails to
 		// send a mouseup after a dragged node has been dropped, so we
-		// have to listen to dragend.
+		// have to listen to dragend, too.
 		.bind('mouseup dragend', mouseup);
 	}
 	
@@ -161,7 +169,7 @@
 	
 	function activeMousemove(e) {
 		var obj = e.data.obj,
-				timer = e.data.timer;
+		    timer = e.data.timer;
 		
 		obj.pageX = e.pageX;
 		obj.pageY = e.pageY;
@@ -173,8 +181,8 @@
 	
 	function activeMouseup(e) {
 		var target = e.data.target,
-				obj = e.data.obj,
-				timer = e.data.timer;
+		    obj = e.data.obj,
+		    timer = e.data.timer;
 		
 		doc
 		.unbind('mousemove', activeMousemove)
@@ -200,29 +208,27 @@
 	
 	function setup( data, namespaces, eventHandle ) {
 		var elem = jQuery(this),
-				events = elem.data('events');
+		    events = elem.data('events');
 		
 		// If another move event is already setup,
 		// don't setup again.
 		if (((events.movestart ? 1 : 0) +
-				 (events.move ? 1 : 0) +
-				 (events.moveend ? 1 : 0)) > 1) { return; }
+		     (events.move ? 1 : 0) +
+		     (events.moveend ? 1 : 0)) > 1) { return; }
 		
 		// Prevent text selection and stop the node from being dragged.
-		// TODO: Investigate, because text selection occurs in one browser
-		// and not another. Before, we had mousedown in this list.
-		jQuery(this).bind('dragstart.move drag.move', preventDefault);
+		jQuery(this).bind('mousedown.move dragstart.move drag.move', preventDefault);
 	}
 	
 	function teardown( namespaces ) {
 		var elem = jQuery(this),
-				events = elem.data('events');
+		    events = elem.data('events');
 		
 		// If another move event is still setup,
 		// don't teardown just yet.
 		if (((events.movestart ? 1 : 0) +
-				 (events.move ? 1 : 0) +
-				 (events.moveend ? 1 : 0)) > 1) { return; }
+		     (events.move ? 1 : 0) +
+		     (events.moveend ? 1 : 0)) > 1) { return; }
 		
 		jQuery(this).unbind('mousedown dragstart drag', preventDefault);
 	}
