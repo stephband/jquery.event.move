@@ -1,4 +1,4 @@
-<h2>jquery.events.move</h2>
+<h2>jquery.event.move</h2>
 
 <p>Provides custom events 'movestart', 'move' and 'moveend'. These events behave in a similar way
 to 'dragstart', 'drag' and 'dragend', but are intended for building interaction that moves nodes

@@ -1,4 +1,4 @@
-// jquery.events.move
+// jquery.event.move
 // 
 // 0.4
 // 
