@@ -9,7 +9,7 @@
 	
 	<title>Drag test</title>
 	
-	<style>
+	<style type="text/css">
 		html, body {
 			height: 100%;
 			margin: 0;
@@ -19,6 +19,7 @@
 		body {
 			padding-left:  1.6667em;
 			padding-right: 1.6667em;
+			font-family: Helvetica, Arial, sans-serif;
 		}
 		
 		.test {
@@ -27,16 +28,22 @@
 			width:  360px;
 			height: 100px;
 			padding: 20px;
+		  left: 1.6667em;
+		  
+		  color: white;
+		  text-decoration: none;
 		}
 		
 		.first_test {
-			left: 1.6667em;
 			top: 200px;
 		}
 		
 		.second_test {
-			left: 1.6667em;
 			top: 360px;
+		}
+		
+		.third_test {
+			top: 520px;
 		}
 	</style>
 
@@ -46,15 +53,23 @@
 	<header>
 		<h1>Drag test</h1>
 		<p>What happens when we drag a draggable node, when no move handlers have been bound?</p>
+		<p>What happens if it is removed from the DOM while dragging?</p>
+		<p>What happens if a node is draggable AND has move events bound?</p>
 	</header>
 	
 	<a href="#" class="first_test test" draggable="true">Draggable node.</a>
 	<a href="#" class="second_test test" draggable="true">Draggable node that gets removed on dragend.</a>
+	<a href="#" class="third_test test" draggable="true">
+		Draggable node that also has move bound.<br/><br/>
+		Should not be draggable because move events take precedence.
+	</a>
 	
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
 	<script src="js/jquery.event.move.js"></script>
 	<script type="text/javascript">
     var doc = jQuery(document);
+    
+    function logEvent(e){ console.log(e.type, e); }
     
     function dropEffectNone(e) {
       e.originalEvent.dataTransfer.dropEffect = 'none';
@@ -89,6 +104,8 @@
         
       	cancelDrag(elem);
       });
+      
+      jQuery('.third_test').bind('movestart move moveend', logEvent);
     });
 	</script>
 </body>

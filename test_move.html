@@ -2,13 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-
 	<meta charset="utf-8" />
 	
 	<!-- Make IE recognise HTML5 elements (for styling - must stay in the head, before elements are used) -->
 	<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	
-	<title>Title</title>
+	<title>Move test</title>
 	
 	<link rel="icon" type="image/png" href="images/favicon.png" />
 	
@@ -39,6 +38,7 @@
 		<p>Are there any arrors?</p>
 		<p>Does text get selected?</p>
 		<p>Can you still interact with form elements inside the div?</p>
+		<p>Does clicking on a moveable node de-focus a form element? (Not yet implemented)</p>
 	</header>
 	
 	<div class="first_test test">
@@ -61,7 +61,7 @@
 	<script type="text/javascript">
 		function logEvent(e){ console.log(e.type, e); }
 		jQuery(document)
-		.bind('mousedown mouseup click select', logEvent)
+		.bind('mousedown mouseup click select focus blur', logEvent)
 		.ready(function(){
 			var start,
 					box = jQuery('.test');

@@ -21,7 +21,7 @@
 	
 	var doc = jQuery(document),
 			
-			threshold = 1,
+			threshold = 3,
 			
 			// Shim for requestAnimationFrame, falling back to timer. See:
 			// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -100,6 +100,10 @@
 	}
 	
 	function preventDefault(e){
+		e.preventDefault();
+	}
+	
+	function preventIgnoreTags(e){
 		// Don't prevent interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 		
@@ -112,10 +116,10 @@
 		
 		doc
 		.bind('mousemove', e, mousemove)
-		// Bind the unbinders to both mouseup and dragend. FF fails to
-		// send a mouseup after a dragged node has been dropped, so we
-		// have to listen to dragend, too.
-		.bind('mouseup dragend', mouseup);
+		// Bind the unbinders to both mouseup and dragstart. FF fails to
+		// send a mouseup after a dragged node has been dropped, so it
+		// makes sense to cancel the move on dragstart, too.
+		.bind('mouseup dragstart', mouseup);
 	}
 	
 	function mousemove(e){
@@ -164,7 +168,7 @@
 	function mouseup(e) {
 	  doc
 	  .unbind('mousemove', mousemove)
-	  .unbind('mouseup dragend', mouseup);
+	  .unbind('mouseup dragstart', mouseup);
 	}
 	
 	function activeMousemove(e) {
@@ -216,8 +220,11 @@
 		     (events.move ? 1 : 0) +
 		     (events.moveend ? 1 : 0)) > 1) { return; }
 		
-		// Prevent text selection and stop the node from being dragged.
-		jQuery(this).bind('mousedown.move dragstart.move drag.move', preventDefault);
+		jQuery(this)
+		// Stop the node from being dragged
+		.bind('dragstart.move drag.move', preventDefault)
+		// Prevent text selection
+		.bind('mousedown.move', preventIgnoreTags);
 	}
 	
 	function teardown( namespaces ) {
@@ -230,7 +237,9 @@
 		     (events.move ? 1 : 0) +
 		     (events.moveend ? 1 : 0)) > 1) { return; }
 		
-		jQuery(this).unbind('mousedown dragstart drag', preventDefault);
+		jQuery(this)
+		.unbind('dragstart drag', preventDefault)
+		.unbind('mousedown', preventIgnoreTags);
 	}
 	
 	
@@ -260,6 +269,7 @@
 					};
 			
 			// Stop clicks from propagating during a move
+			// Why? I can't remember... investigate.
 			target
 			.bind('click', returnFalse);
 			
