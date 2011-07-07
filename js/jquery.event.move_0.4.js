@@ -1,6 +1,6 @@
 // jquery.event.move
 // 
-// 0.5
+// 0.4
 // 
 // Stephen Band
 // 
@@ -111,17 +111,14 @@
 	}
 	
 	function mousedown(e){
-		// Respond only to mousedowns on the left mouse button
-		if (e.type === mousedown && e.which !== 1) { return; }
-		
-		// Don't get in the way of interaction with form elements.
+		// Don't prevent interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 		
 		doc
 		.bind('mousemove', e, mousemove)
-		// Bind the unbinders to mouseup. FF fails to send a mouseup
-		// after a dragged node has been dropped, so it makes sense
-		// to cancel the move on dragstart, too.
+		// Bind the unbinders to both mouseup and dragstart. FF fails to
+		// send a mouseup after a dragged node has been dropped, so it
+		// makes sense to cancel the move on dragstart, too.
 		.bind('mouseup dragstart', mouseup);
 	}
 	
