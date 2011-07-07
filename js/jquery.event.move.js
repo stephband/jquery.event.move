@@ -112,7 +112,7 @@
 	
 	function mousedown(e){
 		// Respond only to mousedowns on the left mouse button
-		if (e.type === mousedown && e.which !== 1) { return; }
+		if (e.type === 'mousedown' && e.which !== 1) { return; }
 		
 		// Don't get in the way of interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
