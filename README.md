@@ -14,9 +14,9 @@
 <h3>moveend</h3>
 <p>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</p>
 
-<h2>Event Object</h2>
+<h3>The event object</h3>
 
-<p>Event objects passed to the bound handlers are augmented with the properties:</p>
+<p>Move event objects are augmented with the properties:</p>
 
 <dl>
   <dt>e.pageX<br/>e.pageY</dt><dd>Current page coordinates of pointer.</dd>
@@ -75,5 +75,5 @@ where the <code>drag</code> event fires continuously whether you have moved the 
 <h2 id="where">Where is jquery.event.move being used?</h2>
 
 <ul>
-	<li><a href="http://www.webdoc.com">webdoc.com</a>, mostly in the editor</li>
+	<li><a href="http://www.webdoc.com">webdoc.com</a>, in the editor and elsewhere</li>
 </ul>
