@@ -7,8 +7,8 @@
 // Triggers 'movestart', 'move' and 'moveend' events after
 // mousemoves following a mousedown cross a distance threshold,
 // similar to the native 'dragstart', 'drag' and 'dragend' events.
-// Move events are throttled to animation frames. Event objects
-// passed to handlers have the properties:
+// Move events are throttled to animation frames. Move event objects
+// have the properties:
 // 
 // pageX:
 // pageY:		Page coordinates of pointer.
@@ -47,8 +47,6 @@
 			
 			mouseevents = {
 				move: 'mousemove',
-				// FF fails to send a mouseup after a dragged node has been
-				// dropped, so it makes sense to cancel the move on dragstart.
 				cancel: 'mouseup dragstart',
 				end: 'mouseup'
 			},
@@ -129,7 +127,7 @@
 			return touchList.identifiedTouch(id);
 		}
 		
-		// touchList.identifiedTouch does not exist in
+		// touchList.identifiedTouch() does not exist in
 		// webkit yet… we must do the search ourselves...
 		
 		i = -1;
@@ -311,7 +309,7 @@
 		teardown: teardown,
 		_default: function(e) {
 			var target = jQuery(e.target),
-					events = e._events,
+					events = e._events || mouseevents,
 					obj = {
 						type: 'move',
 				  	startX: e.startX,
@@ -332,7 +330,7 @@
 			
 			if (events === mouseevents) {
 				// Stop clicks from propagating during a move
-				// Why? I can't remember, but it is important... investigate.
+				// Why? I can't remember, but it is important...
 				jQuery.event.add(e.target, 'click', returnFalse);
 			}
 			
