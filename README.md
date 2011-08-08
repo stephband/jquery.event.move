@@ -2,14 +2,6 @@
 
 <p>Move events provide an easy way to set up press-move-release interactions on mouse and touch devices.</p>
 
-<!--ul>
-	<li><a href="#what">Move events API</a></li>
-	<li><a href="#how">How to use move events</a></li>
-	<li><a href="#why1">Why not just use mouse or touch events?</a></li>
-	<li><a href="#why2">What about drag events?</a></li>
-	<li><a href="#where">Where is jquery.event.move being used?</a></li>
-</ul-->
-
 
 <h2 id="what">Move events</h2>
 
@@ -39,10 +31,14 @@
 
 <pre><code class="js">
 jQuery('.mydiv').bind('move', function(e) {
+	
 	// move .mydiv horizontally
 	jQuery(this).css({ left: e.startX + e.deltaX });
+
 }).bind('moveend', function() {
+	
 	// move is complete!
+
 });
 </code></pre>
 
@@ -54,7 +50,7 @@ jQuery('.mydiv').bind('move', function(e) {
 <ul>
 	<li>Supports mouse and touch devices, exposing the same event API for both</li>
 	<li>Prevents momentary presses triggering interactions (via a movement threshold)</li>
-	<li>Throttles moves to animation frames (stopping unneccesary processing)</li>
+	<li>Throttles moves to animation frames (stopping unneccesary processing and rendering)</li>
 	<li>Publishes the distance moved (as part of the move event object)</li>
 	<li>Ignores the right mouse button</li>
 	<li>Prevents text selection while moving</li>
@@ -67,7 +63,7 @@ jQuery('.mydiv').bind('move', function(e) {
 
 <h2 id="why2">What about drag events?</h2>
 
-<p>What about them? They're not really the same thing.</p>
+<p>They're not really the same thing.</p>
 
 <p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
 That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
