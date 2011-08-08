@@ -1,6 +1,6 @@
 // jquery.event.move
 // 
-// 0.5
+// 0.6
 // 
 // Stephen Band
 // 
@@ -45,6 +45,18 @@
 				textarea: true,
 				input: true,
 				select: true
+			},
+			
+			mouseevents = {
+				move: 'mousemove',
+				// FF fails to send a mouseup after a dragged node has been
+				// dropped, so it makes sense to cancel the move on dragstart.
+				end: 'mouseup dragstart'
+			},
+			
+			touchevents = {
+				move: 'touchmove',
+				end: 'touchend'
 			};
 	
 	// CONSTRUCTORS
@@ -111,22 +123,30 @@
 	}
 	
 	function mousedown(e){
+		var _e = e.originalEvent,
+				events, data;
+		
 		// Respond only to mousedowns on the left mouse button
 		if (e.type === 'mousedown' && e.which !== 1) { return; }
+		
+		// Respond only to single touches
+		if (e.type === 'touchstart' && _e.touches.length > 1) { return; }
 		
 		// Don't get in the way of interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 		
-		doc
-		.bind('mousemove', e, mousemove)
-		// Bind the unbinders to mouseup. FF fails to send a mouseup
-		// after a dragged node has been dropped, so it makes sense
-		// to cancel the move on dragstart, too.
-		.bind('mouseup dragstart', mouseup);
+		// Store a list of event types depending on whether this is
+		// a mouse or a touch event.
+		events = (e.type === 'mousedown') ? mouseevents : touchevents;
+		data = { start: e, events: events };
+		
+		jQuery.event.add(document, events.move, mousemove, data);
+		jQuery.event.add(document, events.end, mouseup, data);
 	}
 	
 	function mousemove(e){
-		var o = e.data,
+		var o = e.data.start,
+		    events = e.data.events,
 				node = o.target,
 				deltaX = e.pageX - o.pageX,
 				deltaY = e.pageY - o.pageY,
@@ -153,13 +173,12 @@
 					deltaY: deltaY
 				});
 				
-				// Note: If movestart is not cancelled, its' functions are
-				// bound to doc. By unbinding this function after the trigger,
+				// If movestart is not cancelled, its' handlers are bound
+				// to doc. By unbinding this function after the trigger,
 				// we avoid calling teardown of the mousemove handler(s).
 				
-				doc
-				.unbind('mousemove', mousemove)
-				.unbind('mouseup', mouseup);
+				jQuery.event.remove(document, events.move, mousemove);
+				jQuery.event.remove(document, events.end, mouseup);
 				
 				return;
 			}
@@ -169,9 +188,10 @@
 	}
 	
 	function mouseup(e) {
-	  doc
-	  .unbind('mousemove', mousemove)
-	  .unbind('mouseup dragstart', mouseup);
+	  var events = e.data.events;
+	  
+		jQuery.event.remove(document, events.move, mousemove);
+		jQuery.event.remove(document, events.end, mouseup);
 	}
 	
 	function activeMousemove(e) {
@@ -248,7 +268,7 @@
 	
 	// THE MEAT AND POTATOES
 	
-	doc.bind('mousedown.move', mousedown);
+	doc.bind('mousedown.move touchstart.move', mousedown);
 	
 	jQuery.event.special.movestart = {
 		setup: setup,
