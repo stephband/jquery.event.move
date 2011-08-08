@@ -111,22 +111,42 @@
 		return false;
 	}
 	
-	function preventDefault(e){
+	function preventDefault(e) {
 		e.preventDefault();
 	}
 	
-	function preventIgnoreTags(e){
+	function preventIgnoreTags(e) {
 		// Don't prevent interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 		
 		e.preventDefault();
 	}
 	
+	function identifiedTouch(touchList, id) {
+		var i, l;
+		
+		if (touchList.identifiedTouch) {
+			return touchList.identifiedTouch(id);
+		}
+		
+		// touchList.identifiedTouch does not exist in
+		// webkit yet… we must do the search ourselves...
+		
+		i = -1;
+		l = touchList.length;
+		
+		while (++i < l) {
+			if (touchList[i].identifier === id) {
+				return touchList[i];
+			}
+		}
+	}
+	
 	// Handlers that decide when the first movestart is triggered
 	
 	function mousedown(e){
 		var _e = e.originalEvent,
-				events, data;
+				data;
 		
 		// Respond only to mousedowns on the left mouse button
 		if (e.type === 'mousedown' && e.which !== 1) { return; }
@@ -137,18 +157,19 @@
 		// Don't get in the way of interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 		
-		// Store a list of event types depending on whether this is
-		// a mouse or a touch event.
-		events = (e.type === 'mousedown') ? mouseevents : touchevents;
-		data = { start: e, events: events };
+		data = {
+			start: e,
+			events: (e.type === 'mousedown') ? mouseevents : touchevents,
+			touchId: (e.type === 'touchstart' && _e.touches[0].identifier)
+		}
 		
-		jQuery.event.add(document, events.move, mousemove, data);
-		jQuery.event.add(document, events.cancel, mouseup, data);
+		jQuery.event.add(document, data.events.move, mousemove, data);
+		jQuery.event.add(document, data.events.cancel, mouseup, data);
 	}
 	
 	function mousemove(e){
 		var o = e.data.start,
-		    events = e.data.events,
+				events = e.data.events,
 				node = o.target,
 				deltaX = e.pageX - o.pageX,
 				deltaY = e.pageY - o.pageY,
@@ -173,13 +194,13 @@
 					startY: o.pageY,
 					deltaX: deltaX,
 					deltaY: deltaY,
-					events: events
+					_events: e.data.events,
+					_touchId: e.data.touchId
 				});
 				
 				// If movestart is not cancelled, its' handlers are bound
-				// to doc. By unbinding this function after the trigger,
-				// we avoid calling teardown of the mousemove handler(s).
-				
+				// to doc. By unbinding this function after the movestart
+				// trigger we avoid calling teardown of the mousemove handler(s).
 				jQuery.event.remove(document, events.move, mousemove);
 				jQuery.event.remove(document, events.cancel, mouseup);
 				
@@ -204,6 +225,8 @@
 		    timer = e.data.timer,
 		    events = e.data.events;
 		
+		// If more than one finger is down this is no longer a
+		// move action.
 		if (events === touchevents && e.originalEvent.touches.length > 1) { return; }
 		
 		obj.pageX = e.pageX;
@@ -220,10 +243,15 @@
 	}
 	
 	function activeMouseup(e) {
-		var target = e.data.target,
+		var _e = e.originalEvent,
+		    target = e.data.target,
 		    obj = e.data.obj,
 		    timer = e.data.timer,
 		    events = e.data.events;
+		
+		// When fingers are still left on the surface, the
+		// move action may not be finished yet.
+		if (events === touchevents && (identifiedTouch(_e.touches, e.data.touchId))) { return; }
 		
 		jQuery.event.remove(document, events.move, activeMousemove);
 		jQuery.event.remove(document, events.end, activeMouseup);
@@ -283,7 +311,7 @@
 		teardown: teardown,
 		_default: function(e) {
 			var target = jQuery(e.target),
-					events = e.events,
+					events = e._events,
 					obj = {
 						type: 'move',
 				  	startX: e.startX,
@@ -298,7 +326,8 @@
 						target: target,
 						obj: obj,
 						timer: timer,
-						events: events
+						events: events,
+						touchId: e._touchId
 					};
 			
 			if (events === mouseevents) {
@@ -313,13 +342,9 @@
 		}
 	};
 	
-	jQuery.event.special.move = {
+	jQuery.event.special.move = jQuery.event.special.moveend = {
 		setup: setup,
 		teardown: teardown
 	};
 	
-	jQuery.event.special.moveend = {
-		setup: setup,
-		teardown: teardown
-	};
 })(jQuery);
