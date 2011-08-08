@@ -19,9 +19,7 @@
 
 (function(jQuery, undefined){
 	
-	var doc = jQuery(document),
-			
-			threshold = 3,
+	var threshold = 3,
 			
 			// Shim for requestAnimationFrame, falling back to timer. See:
 			// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -51,11 +49,13 @@
 				move: 'mousemove',
 				// FF fails to send a mouseup after a dragged node has been
 				// dropped, so it makes sense to cancel the move on dragstart.
-				end: 'mouseup dragstart'
+				cancel: 'mouseup dragstart',
+				end: 'mouseup'
 			},
 			
 			touchevents = {
 				move: 'touchmove',
+				cancel: 'touchend',
 				end: 'touchend'
 			};
 	
@@ -122,6 +122,8 @@
 		e.preventDefault();
 	}
 	
+	// Handlers that decide when the first movestart is triggered
+	
 	function mousedown(e){
 		var _e = e.originalEvent,
 				events, data;
@@ -141,7 +143,7 @@
 		data = { start: e, events: events };
 		
 		jQuery.event.add(document, events.move, mousemove, data);
-		jQuery.event.add(document, events.end, mouseup, data);
+		jQuery.event.add(document, events.cancel, mouseup, data);
 	}
 	
 	function mousemove(e){
@@ -170,7 +172,8 @@
 					startX: o.pageX,
 					startY: o.pageY,
 					deltaX: deltaX,
-					deltaY: deltaY
+					deltaY: deltaY,
+					events: events
 				});
 				
 				// If movestart is not cancelled, its' handlers are bound
@@ -178,7 +181,7 @@
 				// we avoid calling teardown of the mousemove handler(s).
 				
 				jQuery.event.remove(document, events.move, mousemove);
-				jQuery.event.remove(document, events.end, mouseup);
+				jQuery.event.remove(document, events.cancel, mouseup);
 				
 				return;
 			}
@@ -191,12 +194,17 @@
 	  var events = e.data.events;
 	  
 		jQuery.event.remove(document, events.move, mousemove);
-		jQuery.event.remove(document, events.end, mouseup);
+		jQuery.event.remove(document, events.cancel, mouseup);
 	}
+	
+	// Handlers that control what happens following a movestart
 	
 	function activeMousemove(e) {
 		var obj = e.data.obj,
-		    timer = e.data.timer;
+		    timer = e.data.timer,
+		    events = e.data.events;
+		
+		if (events === touchevents && e.originalEvent.touches.length > 1) { return; }
 		
 		obj.pageX = e.pageX;
 		obj.pageY = e.pageY;
@@ -204,32 +212,34 @@
 		obj.deltaY = e.pageY - obj.startY;
 		
 		timer.kick();
+		
+		if (events === touchevents) {
+			// Stop the touch interface from scrolling
+			e.preventDefault();
+		}
 	}
 	
 	function activeMouseup(e) {
 		var target = e.data.target,
 		    obj = e.data.obj,
-		    timer = e.data.timer;
+		    timer = e.data.timer,
+		    events = e.data.events;
 		
-		doc
-		.unbind('mousemove', activeMousemove)
-		.unbind('mouseup', activeMouseup);
-		
-		obj.pageX = e.pageX;
-		obj.pageY = e.pageY;
-		obj.deltaX = e.pageX - obj.startX;
-		obj.deltaY = e.pageY - obj.startY;
+		jQuery.event.remove(document, events.move, activeMousemove);
+		jQuery.event.remove(document, events.end, activeMouseup);
 		
 		timer.end(function(){
 			obj.type = 'moveend';
 			
 			target.trigger(obj);
 			
-			// Unbind the click suppressor, waiting until after mouseup
-			// has been handled.
-			setTimeout(function(){
-				target.unbind('click', returnFalse);
-			}, 0);
+			if (events === mouseevents) {
+				// Unbind the click suppressor, waiting until after mouseup
+				// has been handled.
+				setTimeout(function(){
+					target.unbind('click', returnFalse);
+				}, 0);
+			}
 		});
 	}
 	
@@ -268,13 +278,14 @@
 	
 	// THE MEAT AND POTATOES
 	
-	doc.bind('mousedown.move touchstart.move', mousedown);
+	jQuery.event.add(document, 'mousedown.move touchstart.move', mousedown);
 	
 	jQuery.event.special.movestart = {
 		setup: setup,
 		teardown: teardown,
 		_default: function(e) {
 			var target = jQuery(e.target),
+					events = e.events,
 					obj = {
 						type: 'move',
 				  	startX: e.startX,
@@ -288,18 +299,19 @@
 					data = {
 						target: target,
 						obj: obj,
-						timer: timer
+						timer: timer,
+						events: events
 					};
 			
-			// Stop clicks from propagating during a move
-			// Why? I can't remember... investigate.
-			target
-			.bind('click', returnFalse);
+			if (events === mouseevents) {
+				// Stop clicks from propagating during a move
+				// Why? I can't remember, but it is important... investigate.
+				jQuery.event.add(e.target, 'click', returnFalse);
+			}
 			
-			// Track mouse events
-			doc
-			.bind('mousemove.move', data, activeMousemove)
-			.bind('mouseup.move', data, activeMouseup);
+			// Track pointer events
+			jQuery.event.add(document, events.move, activeMousemove, data);
+			jQuery.event.add(document, events.end, activeMouseup, data);
 		}
 	};
 	

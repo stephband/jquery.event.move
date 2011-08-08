@@ -75,7 +75,8 @@
 
 <body>
 	<header>
-		<h1>jQuery.event.move</h1></h1>
+		<h1>jQuery.event.move</h1>
+		<output id="output"></output>
 	</header>
 
 	<div class="test">
@@ -171,7 +172,12 @@
 						left: start.x + e.deltaX + box.width()/2,
 						top: start.y + e.deltaY + box.height()/2
 					});
+					
+					output.append('move: '+e.deltaX+', '+e.deltaY+'<br/>');
 				}
+			})
+			.bind('moveend', function(e) {
+				output.append('moveend: '+e.deltaX+', '+e.deltaY+'<br/>');
 			});
 			
 			var rotation = 0;
