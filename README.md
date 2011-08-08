@@ -2,13 +2,13 @@
 
 <p>Move events provide an easy way to set up press-move-release interactions on mouse and touch devices.</p>
 
-<ul>
+<!--ul>
 	<li><a href="#what">Move events API</a></li>
 	<li><a href="#how">How to use move events</a></li>
 	<li><a href="#why1">Why not just use mouse or touch events?</a></li>
-	<li><a href="#why2">What's wrong with drag events?</a></li>
+	<li><a href="#why2">What about drag events?</a></li>
 	<li><a href="#where">Where is jquery.event.move being used?</a></li>
-</ul>
+</ul-->
 
 
 <h2 id="what">Move events API</h2>
@@ -64,13 +64,15 @@ jQuery('.mydiv').bind('move', function(e) {
 </ul>
 
 
-<h2 id="why2">What's wrong with drag events?</h2>
+<h2 id="why2">What about drag events?</h2>
 
-<p>Nothing. They're not the same thing.</p>
+<p>What about them? They're not the same thing.</p>
 
 <p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
 That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
 where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
+
+<p>Where both a <code>dragstart</code> and a move event is bound to the same node, the move events will suppress the drag events. It doesn't make sense to have both firing at once.</p>
 
 
 <h2 id="where">Where is jquery.event.move being used?</h2>
