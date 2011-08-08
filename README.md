@@ -3,6 +3,14 @@
 <p>Move events provide an easy way to set up press-move-release interactions on mouse and touch devices.</p>
 
 
+<ul>
+	<li><a href="#what">Move events API</a></li>
+	<li><a href="#how">How to use move events</a></li>
+	<li><a href="#why1">Why not just use mouse or touch events?</a></li>
+	<li><a href="#why2">What about drag events?</a></li>
+	<li><a href="#where">Where is jquery.event.move being used?</a></li>
+</ul>
+
 <h2 id="what">Move events</h2>
 
 <dl>
