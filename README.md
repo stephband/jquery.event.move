@@ -1,4 +1,4 @@
-<h1>jquery.event.move</h1>
+<h2>jquery.event.move</h2>
 
 <p>Move events provide an easy way to set up press-move-release interactions on mouse and touch devices.</p>
 
@@ -11,18 +11,18 @@
 </ul-->
 
 
-<h2 id="what">Move events</h2>
+<h3 id="what">Move events</h3>
 
-<h3>movestart</h3>
+<h4>movestart</h4>
 <p>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</p>
 
-<h3>move</h3>
+<h4>move</h4>
 <p>Fired on every animation frame where a mousemove or touchmove has changed the cursor position.</p>
 
-<h3>moveend</h3>
+<h4>moveend</h4>
 <p>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</p>
 
-<h2>Event Object</h2>
+<h3>Event Object</h3>
 
 <p>Event objects passed to the bound handlers are augmented with the properties:</p>
 
@@ -33,7 +33,7 @@
 </dl>
 
 
-<h2 id="how">How to use move events</h2>
+<h3 id="how">How to use move events</h3>
 
 <p>Use them in the same way as you normally bind to events in jQuery:</p>
 
@@ -47,7 +47,7 @@ jQuery('.mydiv').bind('move', function(e) {
 </code></pre>
 
 
-<h2 id="why1">Why not just use mouse or touch events?</h2>
+<h3 id="why1">Why not just use mouse or touch events?</h3>
 
 <p>You could, but jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
 
@@ -65,7 +65,7 @@ jQuery('.mydiv').bind('move', function(e) {
 </ul>
 
 
-<h2 id="why2">What about drag events?</h2>
+<h3 id="why2">What about drag events?</h3>
 
 <p>What about them? They're not really the same thing.</p>
 
@@ -76,7 +76,7 @@ where the <code>drag</code> event fires continuously whether you have moved the 
 <p>Where both a <code>dragstart</code> and any move event are bound to the same node, drag events are suppressed.</p>
 
 
-<h2 id="where">Where is jquery.event.move being used?</h2>
+<h3 id="where">Where is jquery.event.move being used?</h3>
 
 <ul>
 	<li><a href="http://www.webdoc.com">webdoc.com</a>, mostly in the editor</li>
