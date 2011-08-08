@@ -16,14 +16,17 @@
 	<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
 </dl>
 
-<h3>The event object</h3>
-
 <p>Move event objects are augmented with the properties:</p>
 
 <dl>
-  <dt>e.pageX<br/>e.pageY</dt><dd>Current page coordinates of pointer.</dd>
-  <dt>e.startX<br/>e.startY</dt><dd>Page coordinates the pointer had at movestart.</dd>
-  <dt>e.deltaX<br/>e.deltaY</dt><dd>Distance the pointer has moved since movestart.</dd>
+  <dt>e.pageX<br/>e.pageY</dt>
+  <dd>Current page coordinates of pointer.</dd>
+  
+  <dt>e.startX<br/>e.startY</dt>
+  <dd>Page coordinates the pointer had at movestart.</dd>
+  
+  <dt>e.deltaX<br/>e.deltaY</dt>
+  <dd>Distance the pointer has moved since movestart.</dd>
 </dl>
 
 
