@@ -5,14 +5,16 @@
 
 <h2 id="what">Move events</h2>
 
-<h3>movestart</h3>
-<p>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</p>
-
-<h3>move</h3>
-<p>Fired on every animation frame where a mousemove or touchmove has changed the cursor position.</p>
-
-<h3>moveend</h3>
-<p>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</p>
+<dl>
+	<dt>movestart</dt>
+	<dd>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</dd>
+	
+	<dt>move</dt>
+	<dd>Fired on every animation frame where a mousemove or touchmove has changed the cursor position.</dd>
+	
+	<dt>moveend</dt>
+	<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
+</dl>
 
 <h3>The event object</h3>
 
