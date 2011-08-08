@@ -11,7 +11,7 @@
 </ul-->
 
 
-<h2 id="what">Move events API</h2>
+<h2 id="what">Move events</h2>
 
 <h3>movestart</h3>
 <p>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</p>
