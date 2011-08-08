@@ -253,11 +253,10 @@
 		     (events.move ? 1 : 0) +
 		     (events.moveend ? 1 : 0)) > 1) { return; }
 		
-		jQuery(this)
 		// Stop the node from being dragged
-		.bind('dragstart.move drag.move', preventDefault)
-		// Prevent text selection
-		.bind('mousedown.move', preventIgnoreTags);
+		jQuery.event.add(this, 'dragstart.move drag.move', preventDefault);
+		// Prevent text selection and touch interface scrolling
+		jQuery.event.add(this, 'mousedown.move touchstart.move', preventIgnoreTags);
 	}
 	
 	function teardown( namespaces ) {
@@ -270,9 +269,8 @@
 		     (events.move ? 1 : 0) +
 		     (events.moveend ? 1 : 0)) > 1) { return; }
 		
-		jQuery(this)
-		.unbind('dragstart drag', preventDefault)
-		.unbind('mousedown', preventIgnoreTags);
+		jQuery.event.remove(this, 'dragstart drag', preventDefault);
+		jQuery.event.remove(this, 'mousedown touchstart', preventIgnoreTags);
 	}
 	
 	

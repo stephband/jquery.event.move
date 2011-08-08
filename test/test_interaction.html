@@ -72,6 +72,10 @@
 		.third_test {
 			top: 520px;
 		}
+		
+		.third_test.active {
+			background-color: orange;
+		}
 	</style>
 </head>
 
@@ -193,7 +197,14 @@
       	cancelDrag(elem);
       });
       
-      wrap.find('.third_test').bind('movestart move moveend', logEvent);
+      wrap.find('.third_test')
+      .bind('movestart', function() {
+      	jQuery(this).addClass('active');
+      })
+      .bind('moveend', function() {
+      	jQuery(this).removeClass('active');
+      })
+      .bind('movestart move moveend', logEvent);
     });
 	</script>
 </body>
