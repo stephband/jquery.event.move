@@ -61,18 +61,19 @@ jQuery('.mydiv').bind('move', function(e) {
 	<li>Prevents scrolling of touch interfaces while moving</li>
 	<li>Stops the interaction while more than one touch is on screen</li>
 	<li>Does not stop interaction with form inputs inside moveable nodes</li>
+	<li>Suppresses drag and drop events</li>
 </ul>
 
 
 <h2 id="why2">What about drag events?</h2>
 
-<p>What about them? They're not the same thing.</p>
+<p>What about them? They're not really the same thing.</p>
 
 <p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
 That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
 where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
 
-<p>Where both a <code>dragstart</code> and a move event is bound to the same node, the move events will suppress the drag events. It doesn't make sense to have both firing at once.</p>
+<p>Where both a <code>dragstart</code> and any move event are bound to the same node, drag events are suppressed.</p>
 
 
 <h2 id="where">Where is jquery.event.move being used?</h2>
