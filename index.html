@@ -22,7 +22,7 @@
 	
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.reset.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.typography.css" />
-	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.typography.12_20.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.typography.14_20.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.forms.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.classes.css" />
 	<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie.css" /><![endif]-->
@@ -31,6 +31,11 @@
 	<!--[if IE 6]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie6.css" /><![endif]-->
 	
 	<style>
+		body {
+			padding-top: 3em;
+			padding-bottom: 3em;
+		}
+		
 		.test {
 			position: absolute;
 			left: 20px;
@@ -88,6 +93,12 @@
 			background: rgba(128,128,128,0.6);
 		}
 		
+		.site_wrap {
+			width: 50em;
+			min-width: 256px;
+			max-width: 80%;
+		}
+		
 		.test_wrap {
 			height: 200px;
 			margin-bottom: 2em;
@@ -96,7 +107,7 @@
 
 </head>
 
-<body>
+<body class="site_wrap wrap">
 	<header>
 		<h1>jQuery.event.move</h1>
 	</header>
@@ -166,7 +177,7 @@
 	
 	<h2 id="why1">Why not just use mouse or touch events?</h2>
 	
-	<p>You could, but jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
+	<p>jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
 	
 	<ul>
 		<li>Supports mouse and touch devices, exposing the same event API for both</li>
