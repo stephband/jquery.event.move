@@ -41,7 +41,7 @@ title: jquery.event.move
 		
 		.test {
 			position: absolute;
-			left: 20px;
+			left: 0;
 			top: 0;
 			background-color: red;
 			width: 200px;
@@ -70,7 +70,7 @@ title: jquery.event.move
 		.phantom_mark {
 			position: absolute;
 			top: 0;
-			left: 20px;
+			left: 0;
 			background: orange;
 			width: 8px;
 			height: 8px;
@@ -437,10 +437,13 @@ jQuery('.mydiv')
 			})();
 			
 			(function(){
-				var centre, startRotate, startAngle;
+				var centre, startRotate, startAngle, positionParent, offset;
 				
 				rotate
 				.bind('movestart', function(e){
+					
+					positionParent = box.parent();
+					offset = positionParent.offset();
 					
 					centre = {
 					  x: parseInt(box.css('left')) + box.width()/2,
@@ -448,7 +451,7 @@ jQuery('.mydiv')
 					};
 					
 					startRotate = rotation;
-					startAngle = toPolar([e.pageX - centre.x, e.pageY - centre.y])[1];
+					startAngle = toPolar([e.pageX - offset.left - centre.x, e.pageY - offset.top - centre.y])[1];
 					
 					// Guides
 					
@@ -463,7 +466,7 @@ jQuery('.mydiv')
 					});
 				})
 				.bind('move', function(e){
-					var nowAngle = toPolar([e.pageX - centre.x, e.pageY - centre.y])[1],
+					var nowAngle = toPolar([e.pageX - offset.left - centre.x, e.pageY - offset.top - centre.y])[1],
 							deltaRotate = nowAngle - startAngle,
 							transform;
 					
