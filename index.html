@@ -191,6 +191,14 @@ title: jquery.event.move
 		<h1>jQuery.event.move</h1>
 	</header>
 	
+	<ul>
+		<li><a href="#what">Move events API</a></li>
+		<li><a href="#how">How to use move events</a></li>
+		<li><a href="#why1">Why not just use mouse or touch events?</a></li>
+		<li><a href="#why2">What about drag events?</a></li>
+		<li><a href="#where">Where is jquery.event.move being used?</a></li>
+	</ul>
+	
 	<div class="test_wrap wrap">
 		<div class="test">
 		 <div class="resize"></div>
@@ -200,14 +208,6 @@ title: jquery.event.move
 		<div class="centre_mark"></div>
 		<div class="origin_mark"></div>
 	</div>
-	
-	<ul>
-		<li><a href="#what">Move events API</a></li>
-		<li><a href="#how">How to use move events</a></li>
-		<li><a href="#why1">Why not just use mouse or touch events?</a></li>
-		<li><a href="#why2">What about drag events?</a></li>
-		<li><a href="#where">Where is jquery.event.move being used?</a></li>
-	</ul>
 	
 	<h2 id="what">Move events</h2>
 
@@ -243,11 +243,11 @@ title: jquery.event.move
 	{% highlight js %}
 jQuery('.mydiv')
 .bind('move', function(e) {
-	// move .mydiv horizontally
-	jQuery(this).css({ left: e.startX + e.deltaX });
+  // move .mydiv horizontally
+  jQuery(this).css({ left: e.startX + e.deltaX });
 })
 .bind('moveend', function() {
-	// move is complete!
+  // move is complete!
 });{% endhighlight %}
 	
 	<h2 id="why1">Why not just use mouse or touch events?</h2>
