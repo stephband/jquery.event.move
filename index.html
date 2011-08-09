@@ -243,12 +243,12 @@ title: jquery.event.move
 	{% highlight js %}
 	jQuery('.mydiv').bind('move', function(e) {
 		
-		// move .mydiv horizontally
-		jQuery(this).css({ left: e.startX + e.deltaX });
+	  // move .mydiv horizontally
+	  jQuery(this).css({ left: e.startX + e.deltaX });
 	
 	}).bind('moveend', function() {
 		
-		// move is complete!
+	  // move is complete!
 	
 	});
 	{% endhighlight %}
