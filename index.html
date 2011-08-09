@@ -274,8 +274,6 @@ jQuery('.mydiv')
 	
 	<h2 id="why2">What about drag events?</h2>
 	
-	<p>They're not really the same thing.</p>
-	
 	<p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
 	That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
 	where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
@@ -328,7 +326,7 @@ jQuery('.mydiv')
 		
 		// log event objects
 		
-		function logEvent(e){ console.log(e.type, e); }
+		function logEvent(e){ /*console.log(e.type, e);*/ }
 		
 		jQuery(document)
 		.bind('mousedown mouseup', logEvent)
