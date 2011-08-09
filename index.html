@@ -1,22 +1,52 @@
+---
+title: jquery.event.move
+---
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
+<html lang="en">
 <head>
-
 	<meta charset="utf-8" />
-	
-	<!-- Make IE recognise HTML5 elements (for styling - must stay in the head, before elements are used) -->
-	<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<meta name="author" content="">
+	<meta name="description" content="">
 	
 	<title>Title</title>
 	
+	<script>document.documentElement.className = 'js';</script>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+	<!-- Force latest IE rendering engine & Chrome Frame -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<!-- Make IE recognise HTML5 elements for styling -->
+	<!--[if lte IE 8]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<!-- Disable image toolbar in IE6 -->
+	<!--[if lte IE 6]><meta http-equiv="imagetoolbar" content="no" /><![endif]-->
+	
 	<link rel="icon" type="image/png" href="images/favicon.png" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+	
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.reset.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.typography.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.typography.14_20.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.forms.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.classes.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie.css" /><![endif]-->
+	<!--[if IE 8]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie8.css" /><![endif]-->
+	<!--[if IE 7]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie7.css" /><![endif]-->
+	<!--[if IE 6]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie6.css" /><![endif]-->
 	
 	<style>
+		body {
+			padding-top: 3em;
+			padding-bottom: 3em;
+		}
+		
+		header {
+			margin-bottom: 2.8571em;
+		}
+		
 		.test {
 			position: absolute;
-			left: 20px;
-			top: 96px;
+			left: 0;
+			top: 0;
 			background-color: red;
 			width: 200px;
 			height: 200px;
@@ -43,8 +73,8 @@
 		.origin_mark,
 		.phantom_mark {
 			position: absolute;
-			top: 96px;
-			left: 20px;
+			top: 0;
+			left: 0;
 			background: orange;
 			width: 8px;
 			height: 8px;
@@ -69,23 +99,197 @@
 		.phantom_mark {
 			background: rgba(128,128,128,0.6);
 		}
+		
+		.site_wrap {
+			width: 50em;
+			min-width: 256px;
+			max-width: 80%;
+		}
+		
+		.test_wrap {
+			height: 200px;
+			margin-bottom: 2em;
+		}
+		
+		pre {
+			padding: 0.6429em;
+			background-color: #eeeeee;
+			border: 1px solid #cccccc;
+			
+			-webkit-border-radius: 0.3571em;
+			   -moz-border-radius: 0.3571em;
+			     -o-border-radius: 0.3571em;
+			        border-radius: 0.3571em;
+		}
+		
+		code {
+
+		}
+		
+		
+		
+		
+.c { color: #008800; font-style: italic } /* Comment */
+.err { border: 1px solid #FF0000 } /* Error */
+.k { color: #AA22FF; font-weight: bold } /* Keyword */
+.o { color: #666666 } /* Operator */
+.cm { color: #008800; font-style: italic } /* Comment.Multiline */
+.cp { color: #008800 } /* Comment.Preproc */
+.c1 { color: #008800; font-style: italic } /* Comment.Single */
+.gd { color: #A00000 } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gr { color: #FF0000 } /* Generic.Error */
+.gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.gi { color: #00A000 } /* Generic.Inserted */
+.go { color: #808080 } /* Generic.Output */
+.gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.gt { color: #0040D0 } /* Generic.Traceback */
+.kc { color: #AA22FF; font-weight: bold } /* Keyword.Constant */
+.kd { color: #AA22FF; font-weight: bold } /* Keyword.Declaration */
+.kp { color: #AA22FF } /* Keyword.Pseudo */
+.kr { color: #AA22FF; font-weight: bold } /* Keyword.Reserved */
+.kt { color: #AA22FF; font-weight: bold } /* Keyword.Type */
+.m { color: #666666 } /* Literal.Number */
+.s { color: #BB4444 } /* Literal.String */
+.na { color: #BB4444 } /* Name.Attribute */
+.nb { color: #AA22FF } /* Name.Builtin */
+.nc { color: #0000FF } /* Name.Class */
+.no { color: #880000 } /* Name.Constant */
+.nd { color: #AA22FF } /* Name.Decorator */
+.ni { color: #999999; font-weight: bold } /* Name.Entity */
+.ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.nf { color: #00A000 } /* Name.Function */
+.nl { color: #A0A000 } /* Name.Label */
+.nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.nt { color: #008000; font-weight: bold } /* Name.Tag */
+.nv { color: #B8860B } /* Name.Variable */
+.ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.mf { color: #666666 } /* Literal.Number.Float */
+.mh { color: #666666 } /* Literal.Number.Hex */
+.mi { color: #666666 } /* Literal.Number.Integer */
+.mo { color: #666666 } /* Literal.Number.Oct */
+.sb { color: #BB4444 } /* Literal.String.Backtick */
+.sc { color: #BB4444 } /* Literal.String.Char */
+.sd { color: #BB4444; font-style: italic } /* Literal.String.Doc */
+.s2 { color: #BB4444 } /* Literal.String.Double */
+.se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.sh { color: #BB4444 } /* Literal.String.Heredoc */
+.si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.sx { color: #008000 } /* Literal.String.Other */
+.sr { color: #BB6688 } /* Literal.String.Regex */
+.s1 { color: #BB4444 } /* Literal.String.Single */
+.ss { color: #B8860B } /* Literal.String.Symbol */
+.bp { color: #AA22FF } /* Name.Builtin.Pseudo */
+.vc { color: #B8860B } /* Name.Variable.Class */
+.vg { color: #B8860B } /* Name.Variable.Global */
+.vi { color: #B8860B } /* Name.Variable.Instance */
+.il { color: #666666 } /* Literal.Number.Integer.Long */
 	</style>
 
 </head>
 
-<body>
+<body class="site_wrap wrap">
 	<header>
 		<h1>jQuery.event.move</h1>
-		<output id="output"></output>
 	</header>
-
-	<div class="test">
-	 <div class="resize"></div>
-	 <div class="rotate"></div>
+	
+	<!--ul>
+		<li><a href="#what">Move events</a></li>
+		<li><a href="#how">How to use move events</a></li>
+		<li><a href="#why1">Why not just use mouse or touch events?</a></li>
+		<li><a href="#why2">What about drag events?</a></li>
+		<li><a href="#where">Where is jquery.event.move being used?</a></li>
+	</ul-->
+	
+	<div class="test_wrap wrap">
+		<div class="test">
+		 <div class="resize"></div>
+		 <div class="rotate"></div>
+		</div>
+		
+		<div class="centre_mark"></div>
+		<div class="origin_mark"></div>
 	</div>
 	
-	<div class="centre_mark"></div>
-	<div class="origin_mark"></div>
+	<h2>Download</h2>
+	
+	<ul>
+		<li><a href="http://github.com/stephband/jquery.event.move">github.com/stephband/jquery.event.move</a></li>
+	</ul>
+	
+	<h2 id="what">Move events</h2>
+
+	<dl>
+		<dt>movestart</dt>
+		<dd>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</dd>
+		
+		<dt>move</dt>
+		<dd>Fired on every animation frame where a mousemove or touchmove has changed the cursor position.</dd>
+		
+		<dt>moveend</dt>
+		<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
+	</dl>
+	
+	<p>Move event objects are augmented with the properties:</p>
+	
+	<dl>
+	  <dt>e.pageX, e.pageY</dt>
+	  <dd>Current page coordinates of pointer.</dd>
+	  
+	  <dt>e.startX, e.startY</dt>
+	  <dd>Page coordinates the pointer had at movestart.</dd>
+	  
+	  <dt>e.deltaX, e.deltaY</dt>
+	  <dd>Distance the pointer has moved since movestart.</dd>
+	</dl>
+	
+	
+	<h2 id="how">How to use move events</h2>
+	
+	{% highlight js %}
+jQuery('.mydiv')
+.bind('move', function(e) {
+  // move .mydiv horizontally
+  jQuery(this).css({ left: e.startX + e.deltaX });
+})
+.bind('moveend', function() {
+  // move is complete!
+});{% endhighlight %}
+	
+	<h2 id="why1">Why not just use mouse or touch events?</h2>
+	
+	<p>jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
+	
+	<ul>
+		<li>Supports mouse and touch devices, exposing the same event API for both</li>
+		<li>Prevents momentary presses triggering interactions (via a movement threshold)</li>
+		<li>Throttles moves to animation frames (stopping unneccesary processing and rendering)</li>
+		<li>Publishes the distance moved (as part of the move event object)</li>
+		<li>Ignores the right mouse button</li>
+		<li>Prevents text selection while moving</li>
+		<li>Prevents scrolling of touch interfaces while moving</li>
+		<li>Stops the interaction while more than one touch is on screen</li>
+		<li>Does not stop interaction with form inputs inside moveable nodes</li>
+		<li>Suppresses drag and drop events</li>
+	</ul>
+	
+	
+	<h2 id="why2">What about drag events?</h2>
+	
+	<p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
+	That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
+	where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
+	
+	<p>Where both a <code>dragstart</code> and any move event are bound to the same node, drag events are suppressed.</p>
+	
+	
+	<h2 id="where">Where is jquery.event.move being used?</h2>
+	
+	<ul>
+		<li><a href="http://www.webdoc.com">webdoc.com</a></li>
+	</ul>
 	
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
 	<script src="js/jquery.event.move.js"></script>
@@ -126,7 +330,7 @@
 		
 		// log event objects
 		
-		function logEvent(e){ console.log(e.type, e); }
+		function logEvent(e){ /*console.log(e.type, e);*/ }
 		
 		jQuery(document)
 		.bind('mousedown mouseup', logEvent)
@@ -235,10 +439,13 @@
 			})();
 			
 			(function(){
-				var centre, startRotate, startAngle;
+				var centre, startRotate, startAngle, positionParent, offset;
 				
 				rotate
 				.bind('movestart', function(e){
+					
+					positionParent = box.parent();
+					offset = positionParent.offset();
 					
 					centre = {
 					  x: parseInt(box.css('left')) + box.width()/2,
@@ -246,7 +453,7 @@
 					};
 					
 					startRotate = rotation;
-					startAngle = toPolar([e.pageX - centre.x, e.pageY - centre.y])[1];
+					startAngle = toPolar([e.pageX - offset.left - centre.x, e.pageY - offset.top - centre.y])[1];
 					
 					// Guides
 					
@@ -261,7 +468,7 @@
 					});
 				})
 				.bind('move', function(e){
-					var nowAngle = toPolar([e.pageX - centre.x, e.pageY - centre.y])[1],
+					var nowAngle = toPolar([e.pageX - offset.left - centre.x, e.pageY - offset.top - centre.y])[1],
 							deltaRotate = nowAngle - startAngle,
 							transform;
 					
