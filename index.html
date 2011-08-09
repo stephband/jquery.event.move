@@ -241,15 +241,14 @@ title: jquery.event.move
 	<p>Use them in the same way as you normally bind to events in jQuery:</p>
 	
 	{% highlight js %}
-	jQuery('.mydiv')
-	.bind('move', function(e) {
-	&nbsp;// move .mydiv horizontally
-	  jQuery(this).css({ left: e.startX + e.deltaX });
-	})
-	.bind('moveend', function() {
-	  // move is complete!
-	});
-	{% endhighlight %}
+jQuery('.mydiv')
+.bind('move', function(e) {
+	// move .mydiv horizontally
+	jQuery(this).css({ left: e.startX + e.deltaX });
+})
+.bind('moveend', function() {
+	// move is complete!
+});{% endhighlight %}
 	
 	<h2 id="why1">Why not just use mouse or touch events?</h2>
 	
