@@ -1,6 +1,6 @@
 // jquery.event.move
 // 
-// 0.7
+// 0.6
 // 
 // Stephen Band
 // 
@@ -11,11 +11,11 @@
 // have the properties:
 // 
 // pageX:
-// pageY:   Page coordinates of pointer.
+// pageY:		Page coordinates of pointer.
 // startX:
-// startY:  Page coordinates of pointer at movestart.
+// startY:	Page coordinates of pointer at movestart.
 // deltaX:
-// deltaY:  Distance the pointer has moved since movestart.
+// deltaY:	Distance the pointer has moved since movestart.
 
 (function(jQuery, undefined){
 	
