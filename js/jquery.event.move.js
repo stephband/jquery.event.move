@@ -307,7 +307,7 @@
 		
 		timer.end(function(){
 			obj.type = 'moveend';
-			console.log(obj);
+
 			trigger(target, obj);
 			
 			if (events === mouseevents) {
