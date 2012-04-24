@@ -153,7 +153,7 @@
 	
 	function mousedown(e){
 		var _e = e.originalEvent,
-				data;
+				data, touch;
 		
 		// Respond only to mousedowns on the left mouse button
 		if (e.type === 'mousedown' && e.which !== 1) { return; }
@@ -164,10 +164,29 @@
 		// Don't get in the way of interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 		
-		data = {
-			start: e,
-			events: (e.type === 'mousedown') ? mouseevents : touchevents,
-			touchId: (e.type === 'touchstart' && _e.touches[0].identifier)
+		
+		if (e.type === 'touchstart') {
+			touch = _e.touches[0];
+
+			data = {
+				start: {
+					target: e.target,
+					pageX: touch.pageX,
+					pageY: touch.pageY
+				},
+				events: touchevents,
+				touchId: touch.identifier
+			};
+		}
+		else {
+			data = {
+				start: {
+					target: e.target,
+					pageX: e.pageX,
+					pageY: e.pageY
+				},
+				events: mouseevents,
+			}
 		}
 		
 		add(document, data.events.move, mousemove, data);
@@ -175,13 +194,28 @@
 	}
 	
 	function mousemove(e){
-		var o = e.data.start,
+		var _e = e.originalEvent,
+		    o = e.data.start,
 				events = e.data.events,
 				node = o.target,
-				deltaX = e.pageX - o.pageX,
-				deltaY = e.pageY - o.pageY,
+				pageX, pageY,
+				deltaX, deltaY,
 				elem, data;
 		
+		if (events === touchevents) {
+			touch = _e.touches[0];
+			pageX = touch.pageX;
+			pageY = touch.pageY;
+			deltaX = touch.pageX - o.pageX;
+			deltaY = touch.pageY - o.pageY;
+		}
+		else {
+			pageX = e.pageX;
+			pageY = e.pageY;
+			deltaX = e.pageX - o.pageX;
+			deltaY = e.pageY - o.pageY;
+		}
+
 		// Do nothing if the threshold has not been crossed
 		if ((deltaX * deltaX) + (deltaY * deltaY) < (threshold * threshold)) { return; }
 		
@@ -194,8 +228,8 @@
 				
 				trigger(node, {
 					type: 'movestart',
-					pageX: e.pageX,
-					pageY: e.pageY,
+					pageX: pageX,
+					pageY: pageY,
 					startX: o.pageX,
 					startY: o.pageY,
 					deltaX: deltaX,
@@ -229,16 +263,25 @@
 	function activeMousemove(e) {
 		var obj = e.data.obj,
 		    timer = e.data.timer,
-		    events = e.data.events;
+		    events = e.data.events,
+		    touch, pageX, pageY;
 		
 		// If more than one finger is down this is no longer a
 		// move action.
-		if (events === touchevents && e.originalEvent.touches.length > 1) { return; }
-		
-		obj.pageX = e.pageX;
-		obj.pageY = e.pageY;
-		obj.deltaX = e.pageX - obj.startX;
-		obj.deltaY = e.pageY - obj.startY;
+		if (events === touchevents) {
+			if (e.originalEvent.touches.length > 1) { return; }
+
+			touch = e.originalEvent.touches[0];
+			obj.pageX = touch.pageX;
+			obj.pageY = touch.pageY;
+		}
+		else {
+			obj.pageX = e.pageX;
+			obj.pageY = e.pageY;
+		}
+
+		obj.deltaX = obj.pageX - obj.startX;
+		obj.deltaY = obj.pageY - obj.startY;
 		
 		timer.kick();
 		
@@ -264,7 +307,7 @@
 		
 		timer.end(function(){
 			obj.type = 'moveend';
-			
+			console.log(obj);
 			trigger(target, obj);
 			
 			if (events === mouseevents) {
@@ -291,6 +334,8 @@
 		add(this, 'dragstart.move drag.move', preventDefault);
 		// Prevent text selection and touch interface scrolling
 		add(this, 'mousedown.move touchstart.move', preventIgnoreTags);
+
+		return true;
 	}
 	
 	function teardown( namespaces ) {
@@ -305,6 +350,8 @@
 		
 		remove(this, 'dragstart drag', preventDefault);
 		remove(this, 'mousedown touchstart', preventIgnoreTags);
+
+		return true;
 	}
 	
 	
@@ -334,7 +381,8 @@
 						timer: timer,
 						events: events,
 						touchId: e._touchId
-					};
+					},
+					touch;
 			
 			if (events === mouseevents) {
 				// Stop clicks from propagating during a move
