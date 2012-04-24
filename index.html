@@ -103,6 +103,11 @@
 	
 	<h2 id="what">Move events</h2>
 
+	<p>
+	Move events are intended as low level 'building blocks' for helping with a touch interaction model.
+	They track individual fingers or a single mouse, and expose properties on their event objects that are useful for building gestures.
+	</p>
+
 	<dl>
 		<dt>movestart</dt>
 		<dd>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</dd>
@@ -123,8 +128,11 @@
 	  <dt>e.startX<br/>e.startY</dt>
 	  <dd>Page coordinates the pointer had at movestart.</dd>
 	  
-	  <dt>e.deltaX<br/>e.deltaY</dt>
+	  <dt>e.distX<br/>e.distY</dt>
 	  <dd>Distance the pointer has moved since movestart.</dd>
+
+	  <dt>e.deltaX<br/>e.deltaY</dt>
+	  <dd>Distance the pointer has moved since last move event.</dd>
 	</dl>
 	
 	
@@ -136,7 +144,7 @@
 	jQuery('.mydiv').bind('move', function(e) {
 		
 		// move .mydiv horizontally
-		jQuery(this).css({ left: e.startX + e.deltaX });
+		jQuery(this).css({ left: e.startX + e.distX });
 	
 	}).bind('moveend', function() {
 		
@@ -181,7 +189,7 @@
 		<li><a href="http://www.webdoc.com">webdoc.com</a>, in the editor and elsewhere</li>
 	</ul>
 	
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 	<script src="js/jquery.event.move.js"></script>
 	<script type="text/javascript">
 
@@ -232,14 +240,14 @@
 					centreMark = jQuery('.centre_mark'),
 					originMark = jQuery('.origin_mark');
 			
-			// Test setup and teardown wit multiple binds and unbinds...
+			// Test setup and teardown with multiple binds and unbinds...
 			
 			box
 			.bind('movestart move moveend', logEvent)
 			.unbind('movestart')
 			.unbind('move')
 			.unbind('moveend')
-			//.bind('movestart move moveend', logEvent)
+			.bind('movestart move moveend', logEvent)
 			.bind('movestart', function(e){
 				if (e.target == e.currentTarget) {
 					start = {
@@ -251,20 +259,20 @@
 			.bind('move', function(e){
 				if (e.target == e.currentTarget) {
 					box.css({
-						left: start.x + e.deltaX,
-						top: start.y + e.deltaY
+						left: start.x + e.distX,
+						top: start.y + e.distY
 					});
 					
 					// Guides
 					
 					originMark.css({
-						left: start.x + e.deltaX,
-						top: start.y + e.deltaY
+						left: start.x + e.distX,
+						top: start.y + e.distY
 					});
 					
 					centreMark.css({
-						left: start.x + e.deltaX + box.width()/2,
-						top: start.y + e.deltaY + box.height()/2
+						left: start.x + e.distX + box.width()/2,
+						top: start.y + e.distY + box.height()/2
 					});
 				}
 			});
@@ -272,7 +280,7 @@
 			var rotation = 0;
 			
 			(function(){
-				var start, rotatedOrigin, deltaX, deltaY;
+				var start, rotatedOrigin, distX, distY;
 				
 				resize
 				.bind('movestart', function(e){
@@ -286,7 +294,7 @@
 					};
 				})
 				.bind('move', function(e){
-					var polarDelta = toPolar([e.deltaX, e.deltaY]),
+					var polarDelta = toPolar([e.distX, e.distY]),
 							normalisedDelta, originDelta, width, height;
 					
 					// Comments are useless. I can't describe what's going
@@ -303,8 +311,8 @@
 					height = height >= 0 ? height : 0;
 					
 					originDelta = [
-						e.deltaX/2 - (width === 0 ? -start.width/2 : normalisedDelta[0]/2),
-						e.deltaY/2 - (height === 0 ? -start.height/2 : normalisedDelta[1]/2)
+						e.distX/2 - (width === 0 ? -start.width/2 : normalisedDelta[0]/2),
+						e.distY/2 - (height === 0 ? -start.height/2 : normalisedDelta[1]/2)
 					];
 					
 					box.css({
@@ -338,7 +346,7 @@
 					  x: parseInt(box.css('left')) + box.width()/2,
 					  y: parseInt(box.css('top')) + box.height()/2
 					};
-					
+					logEvent(e);
 					startRotate = rotation;
 					startAngle = toPolar([e.pageX - centre.x, e.pageY - centre.y])[1];
 					
