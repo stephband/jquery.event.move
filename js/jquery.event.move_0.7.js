@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 0.8
+// 0.7
 //
 // Stephen Band
 //
@@ -17,12 +17,8 @@
 // deltaX:
 // deltaY:  Distance the pointer has moved since movestart.
 
-
 (function(jQuery, undefined){
-	var debug = true,
-
-	    log = debug && window.console.log;
-
+	
 	var threshold = 3,
 			
 	    add = jQuery.event.add,
@@ -153,118 +149,113 @@
 		}
 	}
 	
-
 	// Handlers that decide when the first movestart is triggered
 	
 	function mousedown(e){
+		var _e = e.originalEvent,
+				data, touch;
+		
 		// Respond only to mousedowns on the left mouse button
-		if (e.which !== 1) { return; }
-
-		add(document, mouseevents.move, mousemove, e);
-		add(document, mouseevents.cancel, mouseend, e);
-	}
-
-	function mousemove(e){
-		var touchstart = e.data,
-		    touch = e,
-		    distX, distY, node, data, event;
-
-		checkThreshold(touchstart, touch, removeMouse);
-	}
-
-	function mouseend(e) {
-		removeMouse();
-	}
-
-	function removeMouse() {
-		remove(document, mouseevents.move, mousemove);
-		remove(document, mouseevents.cancel, removeMouse);
-	}
-
-	function touchstart(e) {
-		var touch;
-
+		if (e.type === 'mousedown' && e.which !== 1) { return; }
+		
+		// Respond only to single touches
+		if (e.type === 'touchstart' && _e.touches.length > 1) { return; }
+		
 		// Don't get in the way of interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
-
-		touch = e.changedTouches[0];
-			
-		// Use the touch identifier as a namespace, so that we can later
-		// remove handlers pertaining only to this touch.
-		add(document, touchevents.move + '.' + touch.identifier, touchmove, touch);
-		add(document, touchevents.cancel + '.' + touch.identifier, touchend, touch);
-	}
-
-	function touchmove(e){
-		var touchstart = e.data,
-		    touch = identifiedTouch(e.changedTouches, touchstart.identifier);
 		
-		// This isn't the touch you're looking for.
-		if (!touch) { return; }
+		
+		if (e.type === 'touchstart') {
+			touch = _e.touches[0];
 
-		checkThreshold(touchstart, touch, removeTouch);
+			data = {
+				start: {
+					target: e.target,
+					pageX: touch.pageX,
+					pageY: touch.pageY
+				},
+				events: touchevents,
+				touchId: touch.identifier
+			};
+		}
+		else {
+			data = {
+				start: {
+					target: e.target,
+					pageX: e.pageX,
+					pageY: e.pageY
+				},
+				events: mouseevents,
+			}
+		}
+		
+		add(document, data.events.move, mousemove, data);
+		add(document, data.events.cancel, mouseup, data);
 	}
+	
+	function mousemove(e){
+		var _e = e.originalEvent,
+		    o = e.data.start,
+				events = e.data.events,
+				node = o.target,
+				pageX, pageY,
+				deltaX, deltaY,
+				elem, data;
+		
+		if (events === touchevents) {
+			touch = _e.touches[0];
+			pageX = touch.pageX;
+			pageY = touch.pageY;
+			deltaX = touch.pageX - o.pageX;
+			deltaY = touch.pageY - o.pageY;
+		}
+		else {
+			pageX = e.pageX;
+			pageY = e.pageY;
+			deltaX = e.pageX - o.pageX;
+			deltaY = e.pageY - o.pageY;
+		}
 
-	function touchend(e) {
-		var touchstart = e.data,
-		    touch = identifiedTouch(e.changedTouches, touchstart.identifier);
-
-		// This isn't the touch you're looking for.
-		if (!touch) { return; }
-
-		removeTouch(touchstart);
-	}
-
-	function removeTouch(touchstart) {
-		remove(document, '.' + touchstart.identifier, touchmove);
-		remove(document, '.' + touchstart.identifier, touchend);
-	}
-
-	// Logic for deciding when to trigger movestart.
-
-	function checkThreshold(touchstart, touch, fn) {
-		var distX = touch.pageX - touchstart.pageX,
-		    distY = touch.pageY - touchstart.pageY,
-		    node;
-
-		// Do nothing if the threshold has not been crossed.
-		if ((distX * distX) + (distY * distY) < (threshold * threshold)) { return; }
-
-		return triggerStart(touchstart, touch, distX, distY, fn);
-	}
-
-	function triggerStart(touchstart, touch, distX, distY, fn) {
-		var node = touchstart.target,
-		    data, e;
-
-		// Climb the parents of this target to find out if one of the
-		// move events is bound somewhere. This is an optimisation that
-		// may or may not be good. I should test.
+		// Do nothing if the threshold has not been crossed
+		if ((deltaX * deltaX) + (deltaY * deltaY) < (threshold * threshold)) { return; }
+		
+		// Climb the parents of this target.
 		while (node !== document.documentElement) {
 			data = jQuery.data(node, 'events');
 			
 			// Test to see if one of the move events has been bound.
 			if (data && (data.movestart || data.move || data.moveend)) {
-
-				e = jQuery.Event(touch);
-				e.type = 'movestart';
-				e.startX = touchstart.pageX;
-				e.startY = touchstart.pageY;
-				e.distX = distX;
-				e.distY = distY;
-				// This being the very first move event, dist and delta are equal.
-				e.deltaX = distX;
-				e.deltaY = distY;
-
-				if (debug) { log('trigger movestart:', event); }
-
-				trigger(touchstart.target, event);
-
-				return fn();
+				
+				trigger(node, {
+					type: 'movestart',
+					pageX: pageX,
+					pageY: pageY,
+					startX: o.pageX,
+					startY: o.pageY,
+					deltaX: deltaX,
+					deltaY: deltaY,
+					_events: e.data.events,
+					_touchId: e.data.touchId
+				});
+				
+				// If movestart is not cancelled, its' handlers are bound
+				// to doc. By unbinding this function after the movestart
+				// trigger we avoid calling teardown of the mousemove handler(s).
+				remove(document, events.move, mousemove);
+				remove(document, events.cancel, mouseup);
+				
+				return;
 			}
 			
 			node = node.parentNode;
 		}
+	}
+	
+	function mouseup(e) {
+	  var events = e.data.events;
+	  
+		remove(document, events.move, mousemove);
+		remove(document, events.cancel, mouseup);
 	}
 	
 	// Handlers that control what happens following a movestart
@@ -366,8 +357,7 @@
 	
 	// THE MEAT AND POTATOES
 	
-	add(document, 'mousedown.move', mousedown);
-	add(document, 'touchstart.move', touchstart);
+	add(document, 'mousedown.move touchstart.move', mousedown);
 	
 	jQuery.event.special.movestart = {
 		setup: setup,
@@ -411,19 +401,4 @@
 		teardown: teardown
 	};
 	
-})(jQuery);
-
-
-// Make jQuery copy touch event properties over to the jQuery event
-// object, if they are not already listed.
-
-(function(jQuery, undefined){
-	var props = ["touches", "targetTouches", "changedTouches"],
-	    l = props.length;
-	
-	while (l--) {
-		if (jQuery.event.props.indexOf(props[l]) === -1) {
-			jQuery.event.props.push(props[l]);
-		}
-	}
 })(jQuery);
