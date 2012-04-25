@@ -19,7 +19,7 @@
 
 
 (function(jQuery, undefined){
-	var debug = true;
+	var debug = false;
 
 	var threshold = 3,
 			
@@ -133,7 +133,7 @@
 	
 	function identifiedTouch(touchList, id) {
 		var i, l;
-		
+
 		if (touchList.identifiedTouch) {
 			return touchList.identifiedTouch(id);
 		}
@@ -179,13 +179,24 @@
 	}
 
 	function touchstart(e) {
-		var touch;
+		var t, touch;
 
 		// Don't get in the way of interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 
-		touch = e.changedTouches[0];
-			
+		t = e.changedTouches[0];
+		
+		// iOS has a nasty habit of live updating the touch objects, rather
+		// than giving us a copy on each move. That means we can't trust the
+		// touchstart object to stay the same, so make a clone.
+		touch = {
+			target: t.target,
+			pageX: t.pageX,
+			pageY: t.pageY,
+			timeStamp: e.timeStamp,
+			identifier: t.identifier
+		};
+
 		// Use the touch identifier as a namespace, so that we can later
 		// remove handlers pertaining only to this touch.
 		add(document, touchevents.move + '.' + touch.identifier, touchmove, touch);
@@ -195,7 +206,7 @@
 	function touchmove(e){
 		var touchstart = e.data,
 		    touch = identifiedTouch(e.changedTouches, touchstart.identifier);
-		
+
 		// This isn't the touch you're looking for.
 		if (!touch) { return; }
 
@@ -261,7 +272,7 @@
 				// to be used as template for the move and moveend events.
 				trigger(touchstart.target, e, e);
 
-				return fn();
+				return fn(touchstart);
 			}
 			
 			node = node.parentNode;
@@ -321,7 +332,7 @@
 		if (!touch) { return; }
 
 		removeActiveTouch(event);
-		endEvent(event, touch, timer);
+		endEvent(event, timer);
 	}
 
 	function removeActiveTouch(event) {
@@ -414,8 +425,8 @@
 				add(document, mouseevents.end, activeMouseend, data);
 			}
 			else {
-				add(document, touchevents.move, activeTouchmove, data);
-				add(document, touchevents.end, activeTouchend, data);
+				add(document, touchevents.move + '.' + event.identifier, activeTouchmove, data);
+				add(document, touchevents.end + '.' + event.identifier, activeTouchend, data);
 			}
 		}
 	};
