@@ -1,15 +1,15 @@
 // jquery.event.move
-// 
-// 0.7
-// 
+//
+// 0.8
+//
 // Stephen Band
-// 
+//
 // Triggers 'movestart', 'move' and 'moveend' events after
 // mousemoves following a mousedown cross a distance threshold,
 // similar to the native 'dragstart', 'drag' and 'dragend' events.
 // Move events are throttled to animation frames. Move event objects
 // have the properties:
-// 
+//
 // pageX:
 // pageY:   Page coordinates of pointer.
 // startX:
@@ -17,13 +17,24 @@
 // deltaX:
 // deltaY:  Distance the pointer has moved since movestart.
 
+
 (function(jQuery, undefined){
-	
+	var debug = false;
+
 	var threshold = 3,
 			
+	    add = jQuery.event.add,
+	   
+	    remove = jQuery.event.remove,
+
+	    // Just sugar, so we can have arguments in the same order as
+	    // add and remove.
+	    trigger = function(node, type, data) {
+	      jQuery.event.trigger(type, data, node);
+	    },
+
 			// Shim for requestAnimationFrame, falling back to timer. See:
 			// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-			
 			requestFrame = (function(){
 				return (
 					window.requestAnimationFrame ||
@@ -57,7 +68,7 @@
 				end: 'touchend'
 			};
 	
-	// CONSTRUCTORS
+	// Constructors
 	
 	function Timer(fn){
 		var callback = fn,
@@ -74,11 +85,11 @@
 			else {
 				running = false;
 			}
-		};
+		}
 		
 		this.kick = function(fn) {
 			active = true;
-			if (!running) { trigger(+new Date()); }
+			if (!running) { trigger(); }
 		};
 		
 		this.end = function(fn) {
@@ -100,10 +111,10 @@
 				
 				active = true;
 			}
-		}
+		};
 	}
 	
-	// FUNCTIONS
+	// Functions
 	
 	function returnFalse(e) {
 		return false;
@@ -122,7 +133,7 @@
 	
 	function identifiedTouch(touchList, id) {
 		var i, l;
-		
+
 		if (touchList.identifiedTouch) {
 			return touchList.identifiedTouch(id);
 		}
@@ -140,209 +151,309 @@
 		}
 	}
 	
+
 	// Handlers that decide when the first movestart is triggered
 	
 	function mousedown(e){
-		var _e = e.originalEvent,
-				data;
-		
 		// Respond only to mousedowns on the left mouse button
-		if (e.type === 'mousedown' && e.which !== 1) { return; }
-		
-		// Respond only to single touches
-		if (e.type === 'touchstart' && _e.touches.length > 1) { return; }
-		
+		if (e.which !== 1) { return; }
+
+		add(document, mouseevents.move, mousemove, e);
+		add(document, mouseevents.cancel, mouseend, e);
+	}
+
+	function mousemove(e){
+		var touchstart = e.data,
+		    touch = e;
+
+		checkThreshold(touchstart, touch, undefined, removeMouse);
+	}
+
+	function mouseend(e) {
+		removeMouse();
+	}
+
+	function removeMouse() {
+		remove(document, mouseevents.move, mousemove);
+		remove(document, mouseevents.cancel, removeMouse);
+	}
+
+	function touchstart(e) {
+		var t, touch;
+
 		// Don't get in the way of interaction with form elements.
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
+
+		t = e.changedTouches[0];
 		
-		data = {
-			start: e,
-			events: (e.type === 'mousedown') ? mouseevents : touchevents,
-			touchId: (e.type === 'touchstart' && _e.touches[0].identifier)
-		}
-		
-		jQuery.event.add(document, data.events.move, mousemove, data);
-		jQuery.event.add(document, data.events.cancel, mouseup, data);
+		// iOS has a nasty habit of live updating the touch objects, rather
+		// than giving us a copy on each move. That means we can't trust the
+		// touchstart object to stay the same, so make a clone.
+		touch = {
+			target: t.target,
+			pageX: t.pageX,
+			pageY: t.pageY,
+			timeStamp: e.timeStamp,
+			identifier: t.identifier
+		};
+
+		// Use the touch identifier as a namespace, so that we can later
+		// remove handlers pertaining only to this touch.
+		add(document, touchevents.move + '.' + touch.identifier, touchmove, touch);
+		add(document, touchevents.cancel + '.' + touch.identifier, touchend, touch);
 	}
-	
-	function mousemove(e){
-		var o = e.data.start,
-				events = e.data.events,
-				node = o.target,
-				deltaX = e.pageX - o.pageX,
-				deltaY = e.pageY - o.pageY,
-				elem, data;
-		
-		// Do nothing if the threshold has not been crossed
-		if ((deltaX * deltaX) + (deltaY * deltaY) < (threshold * threshold)) { return; }
-		
-		// Climb the parents of this target.
+
+	function touchmove(e){
+		var touchstart = e.data,
+		    touch = identifiedTouch(e.changedTouches, touchstart.identifier);
+
+		// This isn't the touch you're looking for.
+		if (!touch) { return; }
+
+		checkThreshold(touchstart, touch, e.targetTouches, removeTouch);
+	}
+
+	function touchend(e) {
+		var touchstart = e.data,
+		    touch = identifiedTouch(e.changedTouches, touchstart.identifier);
+
+		// This isn't the touch you're looking for.
+		if (!touch) { return; }
+
+		removeTouch(touchstart);
+	}
+
+	function removeTouch(touchstart) {
+		remove(document, '.' + touchstart.identifier, touchmove);
+		remove(document, '.' + touchstart.identifier, touchend);
+	}
+
+
+	// Logic for deciding when to trigger a movestart.
+
+	function checkThreshold(touchstart, touch, touches, fn) {
+		var distX = touch.pageX - touchstart.pageX,
+		    distY = touch.pageY - touchstart.pageY;
+
+		// Do nothing if the threshold has not been crossed.
+		if ((distX * distX) + (distY * distY) < (threshold * threshold)) { return; }
+
+		return triggerStart(touchstart, touch, touches, distX, distY, fn);
+	}
+
+	function triggerStart(touchstart, touch, touches, distX, distY, fn) {
+		var node = touchstart.target,
+		    data, e;
+
+		// Climb the parents of this target to find out if one of the
+		// move events is bound somewhere. This is an optimisation that
+		// may or may not be good. I should test.
 		while (node !== document.documentElement) {
-			elem = jQuery(node);
-			data = elem.data('events');
+			data = jQuery.data(node, 'events');
 			
 			// Test to see if one of the move events has been bound.
 			if (data && (data.movestart || data.move || data.moveend)) {
-				
-				elem.trigger({
+
+				e = {
 					type: 'movestart',
-					pageX: e.pageX,
-					pageY: e.pageY,
-					startX: o.pageX,
-					startY: o.pageY,
-					deltaX: deltaX,
-					deltaY: deltaY,
-					_events: e.data.events,
-					_touchId: e.data.touchId
-				});
-				
-				// If movestart is not cancelled, its' handlers are bound
-				// to doc. By unbinding this function after the movestart
-				// trigger we avoid calling teardown of the mousemove handler(s).
-				jQuery.event.remove(document, events.move, mousemove);
-				jQuery.event.remove(document, events.cancel, mouseup);
-				
-				return;
+					distX: distX,
+					distY: distY,
+					deltaX: distX,
+					deltaY: distY,
+					startX: touchstart.pageX,
+					startY: touchstart.pageY,
+					pageX: touch.pageX,
+					pageY: touch.pageY,
+					identifier: touchstart.identifier,
+					targetTouches: touches
+				};
+
+				// Trigger the movestart event, passing the object as data
+				// to be used as template for the move and moveend events.
+				trigger(touchstart.target, e, e);
+
+				return fn(touchstart);
 			}
 			
 			node = node.parentNode;
 		}
 	}
-	
-	function mouseup(e) {
-	  var events = e.data.events;
-	  
-		jQuery.event.remove(document, events.move, mousemove);
-		jQuery.event.remove(document, events.cancel, mouseup);
-	}
-	
+
+
 	// Handlers that control what happens following a movestart
-	
+
 	function activeMousemove(e) {
-		var obj = e.data.obj,
-		    timer = e.data.timer,
-		    events = e.data.events;
-		
-		// If more than one finger is down this is no longer a
-		// move action.
-		if (events === touchevents && e.originalEvent.touches.length > 1) { return; }
-		
-		obj.pageX = e.pageX;
-		obj.pageY = e.pageY;
-		obj.deltaX = e.pageX - obj.startX;
-		obj.deltaY = e.pageY - obj.startY;
-		
-		timer.kick();
-		
-		if (events === touchevents) {
-			// Stop the touch interface from scrolling
-			e.preventDefault();
-		}
+		var event = e.data.event,
+		    timer = e.data.timer;
+
+		updateEvent(event, e, timer);
 	}
-	
-	function activeMouseup(e) {
-		var _e = e.originalEvent,
-		    target = e.data.target,
-		    obj = e.data.obj,
-		    timer = e.data.timer,
-		    events = e.data.events;
+
+	function activeMouseend(e) {
+		var event = e.data.event,
+		    timer = e.data.timer;
 		
-		// When fingers are still left on the surface, the
-		// move action may not be finished yet.
-		if (events === touchevents && (identifiedTouch(_e.touches, e.data.touchId))) { return; }
-		
-		jQuery.event.remove(document, events.move, activeMousemove);
-		jQuery.event.remove(document, events.end, activeMouseup);
-		
-		timer.end(function(){
-			obj.type = 'moveend';
-			
-			target.trigger(obj);
-			
-			if (events === mouseevents) {
-				// Unbind the click suppressor, waiting until after mouseup
-				// has been handled.
-				setTimeout(function(){
-					target.unbind('click', returnFalse);
-				}, 0);
-			}
+		removeActiveMouse();
+		endEvent(event, timer, function() {
+			// Unbind the click suppressor, waiting until after mouseup
+			// has been handled.
+			setTimeout(function(){
+				remove(e.target, 'click', returnFalse);
+			}, 0);
 		});
 	}
-	
-	function setup( data, namespaces, eventHandle ) {
-		var elem = jQuery(this),
-		    events = elem.data('events');
+
+	function removeActiveMouse(event) {
+		remove(document, mouseevents.move, activeMousemove);
+		remove(document, mouseevents.end, activeMouseend);
+	}
+
+	function activeTouchmove(e) {
+		var event = e.data.event,
+		    timer = e.data.timer,
+		    touch = identifiedTouch(e.changedTouches, event.identifier);
+
+		// This isn't the touch you're looking for.
+		if (!touch) { return; }
 		
-		// If another move event is already setup,
-		// don't setup again.
-		if (((events.movestart ? 1 : 0) +
-		     (events.move ? 1 : 0) +
-		     (events.moveend ? 1 : 0)) > 1) { return; }
+		// Stop the interface from gesturing
+		e.preventDefault();
+
+		event.targetTouches = e.targetTouches;
+		updateEvent(event, touch, timer);
+	}
+
+	function activeTouchend(e) {
+		var event = e.data.event,
+		    timer = e.data.timer,
+		    touch = identifiedTouch(e.changedTouches, event.identifier);
+
+		// This isn't the touch you're looking for.
+		if (!touch) { return; }
+
+		removeActiveTouch(event);
+		endEvent(event, timer);
+	}
+
+	function removeActiveTouch(event) {
+		remove(document, '.' + event.identifier, activeTouchmove);
+		remove(document, '.' + event.identifier, activeTouchend);
+	}
+
+
+	// Logic for triggering move and moveend events
+
+	function updateEvent(event, touch, timer) {
+		event.type = 'move';
+		event.distX =  touch.pageX - event.startX;
+		event.distY =  touch.pageY - event.startY;
+		event.deltaX = touch.pageX - event.pageX;
+		event.deltaY = touch.pageY - event.pageY;
+		event.pageX =  touch.pageX;
+		event.pageY =  touch.pageY;
+
+		timer.kick();
+	}
+
+	function endEvent(event, timer, fn) {
+		timer.end(function(){
+			event.type = 'moveend';
+
+			trigger(event.target, event);
+			
+			return fn && fn();
+		});
+	}
+
+
+	// jQuery special event definition
+
+	function isSetup(events) {
+		return ((events.movestart ? 1 : 0) +
+		        (events.move ? 1 : 0) +
+		        (events.moveend ? 1 : 0)) > 1;
+	}
+
+	function setup(data, namespaces, eventHandle) {
+		var events = jQuery.data(this, 'events');
+		
+		// If another move event is already setup, don't setup again.
+		if (isSetup(events)) { return; }
 		
 		// Stop the node from being dragged
-		jQuery.event.add(this, 'dragstart.move drag.move', preventDefault);
+		add(this, 'dragstart.move drag.move', preventDefault);
 		// Prevent text selection and touch interface scrolling
-		jQuery.event.add(this, 'mousedown.move touchstart.move', preventIgnoreTags);
+		add(this, 'mousedown.move touchstart.move', preventIgnoreTags);
+
+		// Don't bind to the DOM. For speed.
+		return true;
 	}
 	
-	function teardown( namespaces ) {
-		var elem = jQuery(this),
-		    events = elem.data('events');
+	function teardown(namespaces) {
+		var events = jQuery.data(this, 'events');
 		
-		// If another move event is still setup,
-		// don't teardown just yet.
-		if (((events.movestart ? 1 : 0) +
-		     (events.move ? 1 : 0) +
-		     (events.moveend ? 1 : 0)) > 1) { return; }
+		// If another move event is already setup, don't setup again.
+		if (isSetup(events)) { return; }
 		
-		jQuery.event.remove(this, 'dragstart drag', preventDefault);
-		jQuery.event.remove(this, 'mousedown touchstart', preventIgnoreTags);
+		remove(this, 'dragstart drag', preventDefault);
+		remove(this, 'mousedown touchstart', preventIgnoreTags);
+
+		// Don't bind to the DOM. For speed.
+		return true;
 	}
-	
-	
-	// THE MEAT AND POTATOES
-	
-	jQuery.event.add(document, 'mousedown.move touchstart.move', mousedown);
 	
 	jQuery.event.special.movestart = {
 		setup: setup,
 		teardown: teardown,
-		_default: function(e) {
-			var target = jQuery(e.target),
-					events = e._events || mouseevents,
-					obj = {
-						type: 'move',
-				  	startX: e.startX,
-				  	startY: e.startY,
-				  	deltaX: e.pageX - e.startX,
-				  	deltaY: e.pageY - e.startY
-					},
-					timer = new Timer(function(time){
-						target.trigger(obj);
-					}),
-					data = {
-						target: target,
-						obj: obj,
-						timer: timer,
-						events: events,
-						touchId: e._touchId
-					};
+
+		_default: function(e, event) {
+			var data = {
+			      event: event,
+			      timer: new Timer(function(time){
+			        trigger(e.target, event);
+			      })
+			    };
 			
-			if (events === mouseevents) {
+			if (event.identifier === undefined) {
+				// We're dealing with a mouse
+
 				// Stop clicks from propagating during a move
 				// Why? I can't remember, but it is important...
-				jQuery.event.add(e.target, 'click', returnFalse);
+				add(e.target, 'click', returnFalse);
+
+				add(document, mouseevents.move, activeMousemove, data);
+				add(document, mouseevents.end, activeMouseend, data);
 			}
-			
-			// Track pointer events
-			jQuery.event.add(document, events.move, activeMousemove, data);
-			jQuery.event.add(document, events.end, activeMouseup, data);
+			else {
+				add(document, touchevents.move + '.' + event.identifier, activeTouchmove, data);
+				add(document, touchevents.end + '.' + event.identifier, activeTouchend, data);
+			}
 		}
 	};
 	
-	jQuery.event.special.move = jQuery.event.special.moveend = {
+	jQuery.event.special.move =
+	jQuery.event.special.moveend = {
 		setup: setup,
 		teardown: teardown
 	};
+
+	add(document, 'mousedown.move', mousedown);
+	add(document, 'touchstart.move', touchstart);
 	
+})(jQuery);
+
+
+// Make jQuery copy touch event properties over to the jQuery event
+// object, if they are not already listed. But only do the ones we
+// really need.
+
+(function(jQuery, undefined){
+	var props = ["changedTouches", "targetTouches"],
+	    l = props.length;
+	
+	while (l--) {
+		if (jQuery.event.props.indexOf(props[l]) === -1) {
+			jQuery.event.props.push(props[l]);
+		}
+	}
 })(jQuery);
