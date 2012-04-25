@@ -14,59 +14,61 @@
 // pageY:   Page coordinates of pointer.
 // startX:
 // startY:  Page coordinates of pointer at movestart.
+// distX:
+// distY:  Distance the pointer has moved since movestart.
 // deltaX:
-// deltaY:  Distance the pointer has moved since movestart.
+// deltaY:  Distance the finger has moved since last event.
+// velocityX:
+// velocityY:  Average velocity over last few events.
 
 
 (function(jQuery, undefined){
-	var debug = false;
-
 	var threshold = 3,
-			
+	
 	    add = jQuery.event.add,
-	   
+	
 	    remove = jQuery.event.remove,
 
 	    // Just sugar, so we can have arguments in the same order as
 	    // add and remove.
 	    trigger = function(node, type, data) {
-	      jQuery.event.trigger(type, data, node);
+	    	jQuery.event.trigger(type, data, node);
 	    },
 
-			// Shim for requestAnimationFrame, falling back to timer. See:
-			// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-			requestFrame = (function(){
-				return (
-					window.requestAnimationFrame ||
-					window.webkitRequestAnimationFrame ||
-					window.mozRequestAnimationFrame ||
-					window.oRequestAnimationFrame ||
-					window.msRequestAnimationFrame ||
-					function(fn, element){
-						return window.setTimeout(function(){
-							fn();
-						}, 25);
-					}
-				);
-			})(),
-			
-			ignoreTags = {
-				textarea: true,
-				input: true,
-				select: true
-			},
-			
-			mouseevents = {
-				move: 'mousemove',
-				cancel: 'mouseup dragstart',
-				end: 'mouseup'
-			},
-			
-			touchevents = {
-				move: 'touchmove',
-				cancel: 'touchend',
-				end: 'touchend'
-			};
+	    // Shim for requestAnimationFrame, falling back to timer. See:
+	    // see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+	    requestFrame = (function(){
+	    	return (
+	    		window.requestAnimationFrame ||
+	    		window.webkitRequestAnimationFrame ||
+	    		window.mozRequestAnimationFrame ||
+	    		window.oRequestAnimationFrame ||
+	    		window.msRequestAnimationFrame ||
+	    		function(fn, element){
+	    			return window.setTimeout(function(){
+	    				fn();
+	    			}, 25);
+	    		}
+	    	);
+	    })(),
+	    
+	    ignoreTags = {
+	    	textarea: true,
+	    	input: true,
+	    	select: true
+	    },
+	    
+	    mouseevents = {
+	    	move: 'mousemove',
+	    	cancel: 'mouseup dragstart',
+	    	end: 'mouseup'
+	    },
+	    
+	    touchevents = {
+	    	move: 'touchmove',
+	    	cancel: 'touchend',
+	    	end: 'touchend'
+	    };
 	
 	// Constructors
 	
@@ -244,12 +246,12 @@
 	}
 
 	function touchend(e) {
-		var touchstart = e.data,
-		    touch = identifiedTouch(e.changedTouches, event.identifier);
+		var data = e.data,
+		    touch = identifiedTouch(e.changedTouches, data.identifier);
 
 		if (!touch) { return; }
 
-		removeTouch(touchstart);
+		removeTouch(data);
 	}
 
 	function removeTouch(touchstart) {
