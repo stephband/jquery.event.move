@@ -222,11 +222,6 @@ title: jquery.event.move
 	
 	<h2 id="what">Move events</h2>
 
-	<p>
-	Move events are intended as low level 'building blocks' for helping with a touch interaction model.
-	They track individual fingers or a single mouse, and expose properties on their event objects that are useful for building gestures.
-	</p>
-
 	<dl>
 		<dt>movestart</dt>
 		<dd>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</dd>
@@ -247,11 +242,7 @@ title: jquery.event.move
 	  <dt>e.startX, e.startY</dt>
 	  <dd>Page coordinates the pointer had at movestart.</dd>
 	  
-<<<<<<< HEAD
-	  <dt>e.deltaX, e.deltaY</dt>
-=======
 	  <dt>e.distX<br/>e.distY</dt>
->>>>>>> 03cab5144394444a864b803b27820230b9e78312
 	  <dd>Distance the pointer has moved since movestart.</dd>
 
 	  <dt>e.deltaX<br/>e.deltaY</dt>
@@ -261,7 +252,6 @@ title: jquery.event.move
 	
 	<h2 id="how">How to use move events</h2>
 	
-<<<<<<< HEAD
 	{% highlight js %}
 jQuery('.mydiv')
 .bind('move', function(e) {
@@ -271,27 +261,10 @@ jQuery('.mydiv')
 .bind('moveend', function() {
   // move is complete!
 });{% endhighlight %}
-=======
-	<p>Use them in the same way as you normally bind to events in jQuery:</p>
-	
-	<pre><code class="js">
-	jQuery('.mydiv').bind('move', function(e) {
-		
-		// move .mydiv horizontally
-		jQuery(this).css({ left: e.startX + e.distX });
-	
-	}).bind('moveend', function() {
-		
-		// move is complete!
-	
-	});
-	</code></pre>
-	
->>>>>>> 03cab5144394444a864b803b27820230b9e78312
 	
 	<h2 id="why1">Why not just use mouse or touch events?</h2>
 	
-	<p>jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
+	<p>Well, yes, you could. But jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
 	
 	<ul>
 		<li>Supports mouse and touch devices, exposing the same event API for both</li>
@@ -301,10 +274,13 @@ jQuery('.mydiv')
 		<li>Ignores the right mouse button</li>
 		<li>Prevents text selection while moving</li>
 		<li>Prevents scrolling of touch interfaces while moving</li>
-		<li>Stops the interaction while more than one touch is on screen</li>
-		<li>Does not stop interaction with form inputs inside moveable nodes</li>
+		<li>Handles multiple touches</li>
+		<li>Does not bork interaction with form inputs inside moveable nodes</li>
 		<li>Suppresses drag and drop events</li>
 	</ul>
+
+	<p>Move events are intended as 'building blocks' for helping to build interactions.
+	They track individual fingers or a single mouse, and expose properties on their event objects that are useful for detecting gestures.</p>
 	
 	
 	<h2 id="why2">What about drag events?</h2>
