@@ -247,6 +247,9 @@ title: jquery.event.move
 
 	  <dt>e.deltaX, e.deltaY</dt>
 	  <dd>Distance the pointer has moved since last move event.</dd>
+
+	  <dt>e.velocityX, e.velocityY</dt>
+	  <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
 	</dl>
 	
 	
@@ -268,13 +271,13 @@ jQuery('.mydiv')
 	
 	<ul>
 		<li>Supports mouse and touch devices, exposing the same event API for both</li>
-		<li>Prevents momentary presses triggering interactions (via a movement threshold)</li>
-		<li>Throttles moves to animation frames (stopping unneccesary processing and rendering)</li>
-		<li>Publishes the distance moved (as part of the move event object)</li>
-		<li>Ignores the right mouse button</li>
+		<li>Throttles moves to animation frames, preventing unneccesary calls</li>
+		<li>Ignores the right mouse button and clicks with modifier keys</li>
 		<li>Prevents text selection while moving</li>
 		<li>Prevents scrolling of touch interfaces while moving</li>
 		<li>Handles multiple touches</li>
+		<li>Deals with bug (Chrome, possibly all Android) where changedTouches includes touches which haven't changed</li>
+		<li>Handles browser differences where touches in iOS are live objects, where in Android they are static</li>
 		<li>Does not bork interaction with form inputs inside moveable nodes</li>
 		<li>Suppresses drag and drop events</li>
 	</ul>
@@ -337,7 +340,7 @@ jQuery('.mydiv')
 		
 		// log event objects
 		
-		function logEvent(e){ /*console.log(e.type, e);*/ }
+		function logEvent(e){ console.log(e.finger, e.type, e); }
 		
 		jQuery(document)
 		.bind('mousedown mouseup', logEvent)
@@ -358,6 +361,12 @@ jQuery('.mydiv')
 			.unbind('moveend')
 			//.bind('movestart move moveend', logEvent)
 			.bind('movestart', function(e){
+				// Only listen to one finger
+				if (e.targetTouches && e.targetTouches.length > 1) {
+					e.preventDefault();
+					return;
+				}
+
 				if (e.target == e.currentTarget) {
 					start = {
 					  x: parseInt(box.css('left')),
@@ -458,7 +467,7 @@ jQuery('.mydiv')
 					  x: parseInt(box.css('left')) + box.width()/2,
 					  y: parseInt(box.css('top')) + box.height()/2
 					};
-					logEvent(e);
+					
 					startRotate = rotation;
 					startAngle = toPolar([e.pageX - offset.left - centre.x, e.pageY - offset.top - centre.y])[1];
 					
