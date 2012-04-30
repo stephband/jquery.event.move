@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.0
+// 1.0.1
 //
 // Stephen Band
 //
@@ -23,7 +23,7 @@
 
 
 (function(jQuery, undefined){
-	var threshold = 3,
+	var threshold = 6,
 	
 	    add = jQuery.event.add,
 	
@@ -287,8 +287,6 @@
 				touches = e.targetTouches;
 				time = e.timeStamp - data.timeStamp;
 
-				// Trigger the movestart event using data, and pass data
-				// for use as template for the move and moveend events.
 				data.type = 'movestart';
 				data.distX = distX;
 				data.distY = distY;
@@ -301,7 +299,11 @@
 				data.targetTouches = touches;
 				data.finger = touches ? touches.length : 1;
 
-				trigger(data.target, data, data);
+				// Trigger the movestart event using data as a template, and pass
+				// a clean copy of data for use as a template for the move and
+				// moveend events. Also, pass the touchmove event so it can be
+				// prevented when movestart is fired.
+				trigger(data.target, data, [data, e]);
 
 				return fn(data);
 			}
@@ -420,7 +422,7 @@
 		// Stop the node from being dragged
 		add(this, 'dragstart.move drag.move', preventDefault);
 		// Prevent text selection and touch interface scrolling
-		add(this, 'mousedown.move touchstart.move', preventIgnoreTags);
+		add(this, 'mousedown.move', preventIgnoreTags);
 
 		// Don't bind to the DOM. For speed.
 		return true;
@@ -443,7 +445,7 @@
 		setup: setup,
 		teardown: teardown,
 
-		_default: function(e, event) {
+		_default: function(e, event, touchmove) {
 			var data = {
 			      event: event,
 			      timer: new Timer(function(time){
@@ -462,6 +464,8 @@
 				add(document, mouseevents.end, activeMouseend, data);
 			}
 			else {
+				touchmove.preventDefault();
+				
 				add(document, touchevents.move + '.' + event.identifier, activeTouchmove, data);
 				add(document, touchevents.end + '.' + event.identifier, activeTouchend, data);
 			}
