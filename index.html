@@ -1,6 +1,3 @@
----
-title: jquery.event.move
----
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,22 +23,20 @@ title: jquery.event.move
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.typography.14_20.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.forms.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.classes.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.theme.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/site.layout.css" />
+	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/docs.classes.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/site.highlight.light.css" />
 	<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie.css" /><![endif]-->
 	<!--[if IE 8]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie8.css" /><![endif]-->
 	<!--[if IE 7]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie7.css" /><![endif]-->
-	<!--[if IE 6]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie6.css" /><![endif]-->
 	
 	<style>
-		body {
-			padding-top: 3em;
-			padding-bottom: 3em;
+		.test_wrap {
+			height: 200px;
+			margin-bottom: 2em;
 		}
-		
-		header {
-			margin-bottom: 2.8571em;
-		}
-		
+
 		.test {
 			position: absolute;
 			left: 0;
@@ -50,6 +45,7 @@ title: jquery.event.move
 			width: 200px;
 			height: 200px;
 		}
+
 		.resize, .rotate {
 		  position: absolute;
 		  width: 20px;
@@ -98,98 +94,74 @@ title: jquery.event.move
 		.phantom_mark {
 			background: rgba(128,128,128,0.6);
 		}
-		
-		.site_wrap {
-			width: 50em;
-			min-width: 256px;
-			max-width: 80%;
-		}
-		
-		.test_wrap {
-			height: 200px;
-			margin-bottom: 2em;
-		}
-		
-		pre {
-			padding: 0.6429em;
-			background-color: #eeeeee;
-			border: 1px solid #cccccc;
-			
-			-webkit-border-radius: 0.3571em;
-			   -moz-border-radius: 0.3571em;
-			     -o-border-radius: 0.3571em;
-			        border-radius: 0.3571em;
-		}
 	</style>
-
 </head>
 
-<body class="site_wrap wrap">
-	<header>
-		<h1>jQuery.event.move</h1>
+<body>
+	<header class="site_header" id="page_header">
+		<div class="site_wrap wrap">
+			<a class="logo_thumb thumb" href="http://stephband.info" title="stephband" rel="index">
+				<h1>stephband.info</h1>
+			</a>
+		</div>
 	</header>
+
+	<div class="site_wrap wrap">
+		<h1>jQuery.event.move</h1>
 	
-	<!--ul>
-		<li><a href="#what">Move events</a></li>
-		<li><a href="#how">How to use move events</a></li>
-		<li><a href="#why1">Why not just use mouse or touch events?</a></li>
-		<li><a href="#why2">What about drag events?</a></li>
-		<li><a href="#where">Where is jquery.event.move being used?</a></li>
-	</ul-->
-	
-	<div class="test_wrap wrap">
-		<div class="test">
-		 <div class="resize"></div>
-		 <div class="rotate"></div>
+		<div class="test_wrap wrap">
+			<div class="test">
+			 <div class="resize"></div>
+			 <div class="rotate"></div>
+			</div>
+			
+			<div class="centre_mark"></div>
+			<div class="origin_mark"></div>
 		</div>
 		
-		<div class="centre_mark"></div>
-		<div class="origin_mark"></div>
-	</div>
-	
-	<h2>Project</h2>
-	
-	<ul>
-		<li>Github: <a href="http://github.com/stephband/jquery.event.move">github.com/stephband/jquery.event.move</a></li>
-		<li>Issues: <a href="http://github.com/stephband/jquery.event.move/issues">github.com/stephband/jquery.event.move/issues</a></li>
-	</ul>
-	
-	<h2 id="what">Move events</h2>
-
-	<dl>
-		<dt>movestart</dt>
-		<dd>Fired following touchmove or mousemove, when the touch (or mouse) crosses a threshold distance from the position of the mousedown or touchstart.</dd>
+		<h2>Project</h2>
 		
-		<dt>move</dt>
-		<dd>Fired on every animation frame where a touchmove or mousemove has changed position.</dd>
+		<ul>
+			<li>Github: <a href="http://github.com/stephband/jquery.event.move">github.com/stephband/jquery.event.move</a></li>
+			<li>Issues: <a href="http://github.com/stephband/jquery.event.move/issues">github.com/stephband/jquery.event.move/issues</a></li>
+		</ul>
 		
-		<dt>moveend</dt>
-		<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
-	</dl>
+		<h2 id="what">Move events</h2>
 	
-	<p>Move event objects are augmented with the properties:</p>
+		<dl>
+			<dt>movestart</dt>
+			<dd>Fired following touchmove or mousemove, when the touch (or mouse) crosses a threshold distance from the position of the mousedown or touchstart.</dd>
+			
+			<dt>move</dt>
+			<dd>Fired on every animation frame where a touchmove or mousemove has changed position.</dd>
+			
+			<dt>moveend</dt>
+			<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
+		</dl>
+		
+		<p>Move event objects are augmented with the properties:</p>
+		
+		<dl>
+		  <dt>e.pageX, e.pageY</dt>
+		  <dd>Current page coordinates of pointer.</dd>
+		  
+		  <dt>e.startX, e.startY</dt>
+		  <dd>Page coordinates the pointer had at movestart.</dd>
+		  
+		  <dt>e.distX, e.distY</dt>
+		  <dd>Distance the pointer has moved since movestart.</dd>
 	
-	<dl>
-	  <dt>e.pageX, e.pageY</dt>
-	  <dd>Current page coordinates of pointer.</dd>
-	  
-	  <dt>e.startX, e.startY</dt>
-	  <dd>Page coordinates the pointer had at movestart.</dd>
-	  
-	  <dt>e.distX, e.distY</dt>
-	  <dd>Distance the pointer has moved since movestart.</dd>
-
-	  <dt>e.deltaX, e.deltaY</dt>
-	  <dd>Distance the pointer has moved since last move event.</dd>
-
-	  <dt>e.velocityX, e.velocityY</dt>
-	  <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
-	</dl>
+		  <dt>e.deltaX, e.deltaY</dt>
+		  <dd>Distance the pointer has moved since last move event.</dd>
 	
-	
-	<h2 id="how">How to use move events</h2>
-	
-	{% highlight js %}
+		  <dt>e.velocityX, e.velocityY</dt>
+		  <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
+		</dl>
+		
+		
+		<h2 id="how">How to use move events</h2>
+		
+{% highlight js %}
 jQuery('.mydiv')
 .bind('move', function(e) {
   // move .mydiv horizontally
@@ -198,50 +170,51 @@ jQuery('.mydiv')
 .bind('moveend', function() {
   // move is complete!
 });{% endhighlight %}
+		
+		<h2 id="why1">Why not just use mouse or touch events?</h2>
+		
+		<p>Well, yes, you could. But jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
+		
+		<ul>
+			<li>Supports mouse and touch devices, exposing the same event API for both</li>
+			<li>Throttles moves to animation frames, preventing unneccesary calls</li>
+			<li>Ignores the right mouse button and clicks with modifier keys</li>
+			<li>Prevents text selection while moving</li>
+			<li>Prevents scrolling of touch interfaces while moving</li>
+			<li>Handles multiple touches</li>
+			<li>Deals with bug (Chrome, possibly all Android) where changedTouches includes touches which haven't changed</li>
+			<li>Handles browser differences where touches in iOS are live objects, where in Android they are static</li>
+			<li>Does not bork interaction with form inputs inside moveable nodes</li>
+			<li>Suppresses drag and drop events</li>
+		</ul>
 	
-	<h2 id="why1">Why not just use mouse or touch events?</h2>
+		<p>Move events are intended as 'building blocks' for helping to build interactions.
+		They track individual fingers or a single mouse, and expose properties on their event objects that are useful for detecting gestures.</p>
+		
+		
+		<h2 id="why2">What about drag events?</h2>
+		
+		<p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
+		That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
+		where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
+		
+		<p>Where both a <code>dragstart</code> and any move event are bound to the same node, drag events are suppressed.</p>
+		
+		
+		<h2 id="where">Where is jquery.event.move being used?</h2>
+		
+		<p>It's part of the <a href="stephband.info/template">template</a> project. It's used for:</p>
 	
-	<p>Well, yes, you could. But jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
+		<ul>
+			<li><a href="http://www.webdoc.com">webdoc.com</a></li>
+			<li><a href="http://stephband.info/jquery.event.swipe">jquery.event.swipe</a></li>
+		</ul>
 	
-	<ul>
-		<li>Supports mouse and touch devices, exposing the same event API for both</li>
-		<li>Throttles moves to animation frames, preventing unneccesary calls</li>
-		<li>Ignores the right mouse button and clicks with modifier keys</li>
-		<li>Prevents text selection while moving</li>
-		<li>Prevents scrolling of touch interfaces while moving</li>
-		<li>Handles multiple touches</li>
-		<li>Deals with bug (Chrome, possibly all Android) where changedTouches includes touches which haven't changed</li>
-		<li>Handles browser differences where touches in iOS are live objects, where in Android they are static</li>
-		<li>Does not bork interaction with form inputs inside moveable nodes</li>
-		<li>Suppresses drag and drop events</li>
-	</ul>
+		<h2 id="where">Who made it?</h2>
+		
+		<p>I made it. I'm <a href="http://twitter.com/stephband">stephband</a> on twitter, if you're into that sort of thing.</p>
+	</div>
 
-	<p>Move events are intended as 'building blocks' for helping to build interactions.
-	They track individual fingers or a single mouse, and expose properties on their event objects that are useful for detecting gestures.</p>
-	
-	
-	<h2 id="why2">What about drag events?</h2>
-	
-	<p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
-	That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
-	where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
-	
-	<p>Where both a <code>dragstart</code> and any move event are bound to the same node, drag events are suppressed.</p>
-	
-	
-	<h2 id="where">Where is jquery.event.move being used?</h2>
-	
-	<p>It's part of the <a href="stephband.info/template">template</a> project. It's used for:</p>
-
-	<ul>
-		<li><a href="http://www.webdoc.com">webdoc.com</a></li>
-		<li><a href="http://stephband.info/jquery.event.swipe">jquery.event.swipe</a></li>
-	</ul>
-
-	<h2 id="where">Who made it?</h2>
-	
-	<p>I made it. I'm <a href="http://twitter.com/stephband">stephband</a> on twitter, if you're into that sort of thing.</p>
-	
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 	<script src="js/jquery.event.move.js"></script>
 	<script>
