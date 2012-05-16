@@ -29,8 +29,6 @@
 	
 	    remove = jQuery.event.remove,
 
-      movestartTarget = undefined,
-
 	    // Just sugar, so we can have arguments in the same order as
 	    // add and remove.
 	    trigger = function(node, type, data) {
@@ -334,8 +332,7 @@
 			// Unbind the click suppressor, waiting until after mouseup
 			// has been handled.
 			setTimeout(function(){
-				remove(movestartTarget, 'click', returnFalse);
-        movestartTarget = undefined;
+				remove(event.target, 'click', returnFalse);
 			}, 0);
 		});
 	}
@@ -458,12 +455,8 @@
 
 			if (event.identifier === undefined) {
 				// We're dealing with a mouse
-
 				// Stop clicks from propagating during a move
-				// Why? I can't remember, but it is important...
-        movestartTarget = e.target;
-				add(movestartTarget, 'click', returnFalse);
-
+				add(event.target, 'click', returnFalse);
 				add(document, mouseevents.move, activeMousemove, data);
 				add(document, mouseevents.end, activeMouseend, data);
 			}
@@ -475,7 +468,7 @@
 			}
 		}
 	};
-	
+
 	jQuery.event.special.move =
 	jQuery.event.special.moveend = {
 		setup: setup,
