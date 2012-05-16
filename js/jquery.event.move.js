@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.0.1
+// 1.0.2
 //
 // Stephen Band
 //
@@ -28,6 +28,8 @@
 	    add = jQuery.event.add,
 	
 	    remove = jQuery.event.remove,
+
+      movestartTarget = undefined,
 
 	    // Just sugar, so we can have arguments in the same order as
 	    // add and remove.
@@ -332,7 +334,8 @@
 			// Unbind the click suppressor, waiting until after mouseup
 			// has been handled.
 			setTimeout(function(){
-				remove(e.target, 'click', returnFalse);
+				remove(movestartTarget, 'click', returnFalse);
+        movestartTarget = undefined;
 			}, 0);
 		});
 	}
@@ -458,7 +461,8 @@
 
 				// Stop clicks from propagating during a move
 				// Why? I can't remember, but it is important...
-				add(e.target, 'click', returnFalse);
+        movestartTarget = e.target;
+				add(movestartTarget, 'click', returnFalse);
 
 				add(document, mouseevents.move, activeMousemove, data);
 				add(document, mouseevents.end, activeMouseend, data);
