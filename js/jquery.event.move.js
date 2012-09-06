@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.1
+// 1.2
 //
 // Stephen Band
 //
@@ -22,8 +22,19 @@
 // velocityY:  Average velocity over last few events.
 
 
-(function(jQuery, undefined){
-	var threshold = 6,
+(function (module) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(['jquery'], module);
+	} else {
+		// Browser globals
+		module(jQuery);
+	}
+})(function(jQuery, undefined){
+
+	var // Number of pixels a pressed pointer travels before movestart
+	    // event is fired.
+	    threshold = 6,
 	
 	    add = jQuery.event.add,
 	
@@ -473,23 +484,21 @@
 
 	add(document, 'mousedown.move', mousedown);
 	add(document, 'touchstart.move', touchstart);
-	
-})(jQuery);
 
-
-// Make jQuery copy touch event properties over to the jQuery event
-// object, if they are not already listed. But only do the ones we
-// really need. IE7/8 do not have Array#indexOf(), but nor do they
-// have touch events, so let's assume we can ignore them.
-if (typeof Array.prototype.indexOf === 'function') {
-	(function(jQuery, undefined){
-		var props = ["changedTouches", "targetTouches"],
-		    l = props.length;
-		
-		while (l--) {
-			if (jQuery.event.props.indexOf(props[l]) === -1) {
-				jQuery.event.props.push(props[l]);
+	// Make jQuery copy touch event properties over to the jQuery event
+	// object, if they are not already listed. But only do the ones we
+	// really need. IE7/8 do not have Array#indexOf(), but nor do they
+	// have touch events, so let's assume we can ignore them.
+	if (typeof Array.prototype.indexOf === 'function') {
+		(function(jQuery, undefined){
+			var props = ["changedTouches", "targetTouches"],
+			    l = props.length;
+			
+			while (l--) {
+				if (jQuery.event.props.indexOf(props[l]) === -1) {
+					jQuery.event.props.push(props[l]);
+				}
 			}
-		}
-	})(jQuery);
-};
+		})(jQuery);
+	};
+});
