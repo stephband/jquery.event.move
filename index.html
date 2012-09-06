@@ -298,9 +298,9 @@ jQuery('.mydiv')
 			
 			box
 			.bind('movestart move moveend', logEvent)
-//			.unbind('movestart')
-//			.unbind('move')
-//			.unbind('moveend')
+			.unbind('movestart')
+			.unbind('move')
+			.unbind('moveend')
 			//.bind('movestart move moveend', logEvent)
 			.bind('movestart', function(e){
 				// Only listen to one finger
