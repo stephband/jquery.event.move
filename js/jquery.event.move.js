@@ -276,40 +276,28 @@
 		var node = data.target,
 		    events, touches, time;
 
-		// Climb the parents of this target to find out if one of the
-		// move events is bound somewhere. This is an optimisation that
-		// may or may not be good. I should test.
-		while (node !== document.documentElement) {
-			events = jQuery.data(node, 'events');
-			
-			// Test to see if one of the move events has been bound.
-			if (events && (events.movestart || events.move || events.moveend)) {
-				touches = e.targetTouches;
-				time = e.timeStamp - data.timeStamp;
+		touches = e.targetTouches;
+		time = e.timeStamp - data.timeStamp;
 
-				data.type = 'movestart';
-				data.distX = distX;
-				data.distY = distY;
-				data.deltaX = distX;
-				data.deltaY = distY;
-				data.pageX = touch.pageX;
-				data.pageY = touch.pageY;
-				data.velocityX = distX / time;
-				data.velocityY = distY / time;
-				data.targetTouches = touches;
-				data.finger = touches ? touches.length : 1;
+		data.type = 'movestart';
+		data.distX = distX;
+		data.distY = distY;
+		data.deltaX = distX;
+		data.deltaY = distY;
+		data.pageX = touch.pageX;
+		data.pageY = touch.pageY;
+		data.velocityX = distX / time;
+		data.velocityY = distY / time;
+		data.targetTouches = touches;
+		data.finger = touches ? touches.length : 1;
 
-				// Trigger the movestart event using data as a template, and pass
-				// a clean copy of data for use as a template for the move and
-				// moveend events. Also, pass the touchmove event so it can be
-				// prevented when movestart is fired.
-				trigger(data.target, data, [data, e]);
+		// Trigger the movestart event using data as a template, and pass
+		// a clean copy of data for use as a template for the move and
+		// moveend events. Also, pass the touchmove event so it can be
+		// prevented when movestart is fired.
+		trigger(data.target, data, [data, e]);
 
-				return fn(data);
-			}
-			
-			node = node.parentNode;
-		}
+		return fn(data);
 	}
 
 
@@ -408,11 +396,11 @@
 	// jQuery special event definition
 	
 	function getData(node) {
-		var data = jQuery.data(node, 'move');
+		var data = jQuery.data(node, 'movexxx');
 		
 		if (!data) {
 			data = { count: 0 };
-			jQuery.data(node, 'move', data);
+			jQuery.data(node, 'movexxx', data);
 		}
 		
 		return data;
