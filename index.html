@@ -240,7 +240,7 @@ jQuery('.mydiv')
 		</div>
 	</footer>
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
 	<script src="js/jquery.event.move.js"></script>
 	<script>
 		Number.prototype.deg = function() { return this * 57.295779513; }
@@ -278,7 +278,7 @@ jQuery('.mydiv')
 		
 		// log event objects
 		
-		function logEvent(e){ console.log(e.type, e); }
+		function logEvent(e){ window.console && console.log(e.type, e); }
 		
 		jQuery(document)
 		.bind('mousedown mouseup', logEvent)

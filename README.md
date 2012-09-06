@@ -31,6 +31,9 @@
   
   <dt>e.deltaX<br/>e.deltaY</dt>
   <dd>Distance the pointer has moved since movestart.</dd>
+
+  <dt>e.velocityX<br/>e.velocityY</dt>
+  <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
 </dl>
 
 <p>Use them in the same way as you normally bind to events in jQuery:</p>
@@ -50,3 +53,9 @@ jQuery('.mydiv')
 
 });
 </code></pre>
+
+<p>To see an example of what could be done with it, <a href="http://stephband.info/jquery.event.move/">stephband.info/jquery.event.move/</a></p>
+
+<h2>Tweet me</h2>
+
+<p>If you use move events on something interesting, tweet me <a href="http://twitter.com/stephband">@stephband</a>!</p>

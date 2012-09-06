@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.0.2
+// 1.2
 //
 // Stephen Band
 //
@@ -22,8 +22,19 @@
 // velocityY:  Average velocity over last few events.
 
 
-(function(jQuery, undefined){
-	var threshold = 6,
+(function (module) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(['jquery'], module);
+	} else {
+		// Browser globals
+		module(jQuery);
+	}
+})(function(jQuery, undefined){
+
+	var // Number of pixels a pressed pointer travels before movestart
+	    // event is fired.
+	    threshold = 6,
 	
 	    add = jQuery.event.add,
 	
@@ -69,7 +80,8 @@
 	    	cancel: 'touchend',
 	    	end: 'touchend'
 	    };
-	
+
+
 	// Constructors
 	
 	function Timer(fn){
@@ -115,7 +127,8 @@
 			}
 		};
 	}
-	
+
+
 	// Functions
 	
 	function returnFalse(e) {
@@ -172,6 +185,7 @@
 
 		return touch;
 	}
+
 
 	// Handlers that decide when the first movestart is triggered
 	
@@ -276,40 +290,28 @@
 		var node = data.target,
 		    events, touches, time;
 
-		// Climb the parents of this target to find out if one of the
-		// move events is bound somewhere. This is an optimisation that
-		// may or may not be good. I should test.
-		while (node !== document.documentElement) {
-			events = jQuery.data(node, 'events');
-			
-			// Test to see if one of the move events has been bound.
-			if (events && (events.movestart || events.move || events.moveend)) {
-				touches = e.targetTouches;
-				time = e.timeStamp - data.timeStamp;
+		touches = e.targetTouches;
+		time = e.timeStamp - data.timeStamp;
 
-				data.type = 'movestart';
-				data.distX = distX;
-				data.distY = distY;
-				data.deltaX = distX;
-				data.deltaY = distY;
-				data.pageX = touch.pageX;
-				data.pageY = touch.pageY;
-				data.velocityX = distX / time;
-				data.velocityY = distY / time;
-				data.targetTouches = touches;
-				data.finger = touches ? touches.length : 1;
+		data.type = 'movestart';
+		data.distX = distX;
+		data.distY = distY;
+		data.deltaX = distX;
+		data.deltaY = distY;
+		data.pageX = touch.pageX;
+		data.pageY = touch.pageY;
+		data.velocityX = distX / time;
+		data.velocityY = distY / time;
+		data.targetTouches = touches;
+		data.finger = touches ? touches.length : 1;
 
-				// Trigger the movestart event using data as a template, and pass
-				// a clean copy of data for use as a template for the move and
-				// moveend events. Also, pass the touchmove event so it can be
-				// prevented when movestart is fired.
-				trigger(data.target, data, [data, e]);
+		// Trigger the movestart event using data as a template, and pass
+		// a clean copy of data for use as a template for the move and
+		// moveend events. Also, pass the touchmove event so it can be
+		// prevented when movestart is fired.
+		trigger(data.target, data, [data, e]);
 
-				return fn(data);
-			}
-			
-			node = node.parentNode;
-		}
+		return fn(data);
 	}
 
 
@@ -406,18 +408,23 @@
 
 
 	// jQuery special event definition
-
-	function isSetup(events) {
-		return ((events.movestart ? 1 : 0) +
-		        (events.move ? 1 : 0) +
-		        (events.moveend ? 1 : 0)) > 1;
+	
+	function getData(node) {
+		var data = jQuery.data(node, 'movexxx');
+		
+		if (!data) {
+			data = { count: 0 };
+			jQuery.data(node, 'movexxx', data);
+		}
+		
+		return data;
 	}
 
 	function setup(data, namespaces, eventHandle) {
-		var events = jQuery.data(this, 'events');
+		var data = getData(this);
 
 		// If another move event is already setup, don't setup again.
-		if (isSetup(events)) { return; }
+		if (data.count++ > 0) { return; }
 		
 		// Stop the node from being dragged
 		add(this, 'dragstart.move drag.move', preventDefault);
@@ -429,10 +436,10 @@
 	}
 	
 	function teardown(namespaces) {
-		var events = jQuery.data(this, 'events');
+		var data = getData(this);
 
-		// If another move event is already setup, don't setup again.
-		if (isSetup(events)) { return; }
+		// If another move event is still setup, don't teardown.
+		if (--data.count > 0) { return; }
 		
 		remove(this, 'dragstart drag', preventDefault);
 		remove(this, 'mousedown touchstart', preventIgnoreTags);
@@ -447,10 +454,10 @@
 
 		_default: function(e, event, touchmove) {
 			var data = {
-			      event: event,
-			      timer: new Timer(function(time){
-			        trigger(e.target, event);
-			      })
+			    	event: event,
+			    	timer: new Timer(function(time){
+			    		trigger(e.target, event);
+			    	})
 			    };
 
 			if (event.identifier === undefined) {
@@ -477,21 +484,21 @@
 
 	add(document, 'mousedown.move', mousedown);
 	add(document, 'touchstart.move', touchstart);
-	
-})(jQuery);
 
-
-// Make jQuery copy touch event properties over to the jQuery event
-// object, if they are not already listed. But only do the ones we
-// really need.
-
-(function(jQuery, undefined){
-	var props = ["changedTouches", "targetTouches"],
-	    l = props.length;
-	
-	while (l--) {
-		if (jQuery.event.props.indexOf(props[l]) === -1) {
-			jQuery.event.props.push(props[l]);
-		}
-	}
-})(jQuery);
+	// Make jQuery copy touch event properties over to the jQuery event
+	// object, if they are not already listed. But only do the ones we
+	// really need. IE7/8 do not have Array#indexOf(), but nor do they
+	// have touch events, so let's assume we can ignore them.
+	if (typeof Array.prototype.indexOf === 'function') {
+		(function(jQuery, undefined){
+			var props = ["changedTouches", "targetTouches"],
+			    l = props.length;
+			
+			while (l--) {
+				if (jQuery.event.props.indexOf(props[l]) === -1) {
+					jQuery.event.props.push(props[l]);
+				}
+			}
+		})(jQuery);
+	};
+});
