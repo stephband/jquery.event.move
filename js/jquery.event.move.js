@@ -483,15 +483,17 @@
 
 // Make jQuery copy touch event properties over to the jQuery event
 // object, if they are not already listed. But only do the ones we
-// really need.
-
-(function(jQuery, undefined){
-	var props = ["changedTouches", "targetTouches"],
-	    l = props.length;
-	
-	while (l--) {
-		if (jQuery.event.props.indexOf(props[l]) === -1) {
-			jQuery.event.props.push(props[l]);
+// really need. IE7/8 do not have Array#indexOf(), but nor do they
+// have touch events, so let's assume we can ignore them.
+if (typeof Array.prototype.indexOf === 'function') {
+	(function(jQuery, undefined){
+		var props = ["changedTouches", "targetTouches"],
+		    l = props.length;
+		
+		while (l--) {
+			if (jQuery.event.props.indexOf(props[l]) === -1) {
+				jQuery.event.props.push(props[l]);
+			}
 		}
-	}
-})(jQuery);
+	})(jQuery);
+};
