@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.0.2
+// 1.1
 //
 // Stephen Band
 //
@@ -69,7 +69,8 @@
 	    	cancel: 'touchend',
 	    	end: 'touchend'
 	    };
-	
+
+
 	// Constructors
 	
 	function Timer(fn){
@@ -115,7 +116,8 @@
 			}
 		};
 	}
-	
+
+
 	// Functions
 	
 	function returnFalse(e) {
@@ -172,6 +174,7 @@
 
 		return touch;
 	}
+
 
 	// Handlers that decide when the first movestart is triggered
 	
