@@ -406,18 +406,23 @@
 
 
 	// jQuery special event definition
-
-	function isSetup(events) {
-		return ((events.movestart ? 1 : 0) +
-		        (events.move ? 1 : 0) +
-		        (events.moveend ? 1 : 0)) > 1;
+	
+	function getData(node) {
+		var data = jQuery.data(node, 'move');
+		
+		if (!data) {
+			data = { count: 0 };
+			jQuery.data(node, 'move', data);
+		}
+		
+		return data;
 	}
 
 	function setup(data, namespaces, eventHandle) {
-		var events = jQuery.data(this, 'events');
+		var data = getData(this);
 
 		// If another move event is already setup, don't setup again.
-		if (isSetup(events)) { return; }
+		if (data.count++ > 0) { return; }
 		
 		// Stop the node from being dragged
 		add(this, 'dragstart.move drag.move', preventDefault);
@@ -429,10 +434,10 @@
 	}
 	
 	function teardown(namespaces) {
-		var events = jQuery.data(this, 'events');
+		var data = getData(this);
 
-		// If another move event is already setup, don't setup again.
-		if (isSetup(events)) { return; }
+		// If another move event is still setup, don't teardown.
+		if (--data.count > 0) { return; }
 		
 		remove(this, 'dragstart drag', preventDefault);
 		remove(this, 'mousedown touchstart', preventIgnoreTags);
@@ -447,10 +452,10 @@
 
 		_default: function(e, event, touchmove) {
 			var data = {
-			      event: event,
-			      timer: new Timer(function(time){
-			        trigger(e.target, event);
-			      })
+			    	event: event,
+			    	timer: new Timer(function(time){
+			    		trigger(e.target, event);
+			    	})
 			    };
 
 			if (event.identifier === undefined) {

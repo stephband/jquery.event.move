@@ -155,7 +155,10 @@
 					left: start.x + e.deltaX,
 					top: start.y + e.deltaY
 				})
-			});
+			})
+			.unbind('movestart move moveend', logEvent)
+			.unbind('movestart')
+			.unbind('move');
 		});
     
     
