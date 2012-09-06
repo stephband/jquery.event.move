@@ -50,3 +50,7 @@ jQuery('.mydiv')
 
 });
 </code></pre>
+
+<h2>Tweet me</h2>
+
+<p>If you use move events on something interesting, tweet me <a href="http://twitter.com/stephband">@stephband</a>!</p>
