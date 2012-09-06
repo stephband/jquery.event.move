@@ -282,7 +282,7 @@ jQuery('.mydiv')
 		
 		// log event objects
 		
-		function logEvent(e){ console.log(e.type, e); }
+		function logEvent(e){ window.console && console.log(e.type, e); }
 		
 		jQuery(document)
 		.bind('mousedown mouseup', logEvent)
