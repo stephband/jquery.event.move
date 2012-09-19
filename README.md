@@ -40,7 +40,7 @@
 
 <pre><code class="js">
 jQuery('.mydiv')
-.bind('move', function(e) {
+.bind('movestart', function(e) {
 	// move starts.
 
 })
