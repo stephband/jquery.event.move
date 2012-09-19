@@ -49,8 +49,8 @@ title: jQuery.event.move
 
 		.resize, .rotate {
 		  position: absolute;
-		  width: 20px;
-		  height: 20px;
+		  width: 32px;
+		  height: 32px;
 		}
 		
 		.resize {
@@ -172,9 +172,9 @@ jQuery('.mydiv')
   // move is complete!
 });{% endhighlight %}
 		
-		<h2 id="why1">Why not just use mouse or touch events?</h2>
+		<h2 id="why1">Why not just use raw mouse or touch events?</h2>
 		
-		<p>Well, yes, you could. But jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with raw mouse or touch events:</p>
+		<p>Well, yes, you could. But jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with mouse and touch events:</p>
 		
 		<ul>
 			<li>Supports mouse and touch devices, exposing the same event API for both</li>
@@ -195,7 +195,7 @@ jQuery('.mydiv')
 		
 		<h2 id="why2">What about drag events?</h2>
 		
-		<p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making responsive interfaces.
+		<p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making interactive interfaces.
 		That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
 		where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
 		
@@ -204,12 +204,14 @@ jQuery('.mydiv')
 		
 		<h2 id="where">Where is jquery.event.move being used?</h2>
 		
-		<p>It's part of the <a href="stephband.info/template">template</a> project. It's used for:</p>
+		<p>It's part of my front-end toolkit, <a href="http://stephband.info/bolt">Bolt</a>. It's also used for:</p>
 	
 		<ul>
 			<li><a href="http://www.webdoc.com">webdoc.com</a></li>
 			<li><a href="http://stephband.info/jquery.event.swipe">jquery.event.swipe</a></li>
 		</ul>
+		
+		<p>Do let me know at <a href="http://twitter.com/stephband">@stephband</a> if you use it in your project. Cheers!</p>
 	</div>
 
 	<footer class="site_footer">
