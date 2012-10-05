@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.3
+// 1.3.1
 //
 // Stephen Band
 //
@@ -66,7 +66,8 @@
 	    ignoreTags = {
 	    	textarea: true,
 	    	input: true,
-	    	select: true
+	    	select: true,
+	    	button: true
 	    },
 	    
 	    mouseevents = {
@@ -434,10 +435,10 @@
 
 	function setup(data, namespaces, eventHandle) {
 		// Stop the node from being dragged
-		add(this, 'dragstart.move drag.move', preventDefault);
+		//add(this, 'dragstart.move drag.move', preventDefault);
 		
 		// Prevent text selection and touch interface scrolling
-		add(this, 'mousedown.move', preventIgnoreTags);
+		//add(this, 'mousedown.move', preventIgnoreTags);
 		
 		// Tell movestart default handler that we've handled this
 		add(this, 'movestart.move', flagAsHandled);
@@ -455,9 +456,34 @@
 		return true;
 	}
 	
+	function addMethod(handleObj) {
+		// We're not interested in preventing defaults for handlers that
+		// come from internal move or moveend bindings
+		if (handleObj.namespace === "move" || handleObj.namespace === "moveend") {
+			return;
+		}
+		
+		// Stop the node from being dragged
+		add(this, 'dragstart.' + handleObj.guid + ' drag.' + handleObj.guid, preventDefault, undefined, handleObj.selector);
+		
+		// Prevent text selection and touch interface scrolling
+		add(this, 'mousedown.' + handleObj.guid, preventIgnoreTags, undefined, handleObj.selector);
+	}
+	
+	function removeMethod(handleObj) {
+		if (handleObj.namespace === "move" || handleObj.namespace === "moveend") {
+			return;
+		}
+		
+		remove(this, 'dragstart.' + handleObj.guid + ' drag.' + handleObj.guid);
+		remove(this, 'mousedown.' + handleObj.guid);
+	}
+	
 	jQuery.event.special.movestart = {
 		setup: setup,
 		teardown: teardown,
+		add: addMethod,
+		remove: removeMethod,
 
 		_default: function(e) {
 			var template, data;
