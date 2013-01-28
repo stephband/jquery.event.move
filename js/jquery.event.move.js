@@ -222,7 +222,7 @@
 
 	function removeMouse() {
 		remove(document, mouseevents.move, mousemove);
-		remove(document, mouseevents.cancel, removeMouse);
+		remove(document, mouseevents.cancel, mouseend);
 	}
 
 	function touchstart(e) {
