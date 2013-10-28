@@ -166,7 +166,7 @@ title: jQuery.event.move
 jQuery('.mydiv')
 .bind('move', function(e) {
   // move .mydiv horizontally
-  jQuery(this).css({ left: e.startX + e.deltaX });
+  jQuery(this).css({ left: e.startX + e.distX });
 })
 .bind('moveend', function() {
   // move is complete!
