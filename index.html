@@ -354,6 +354,14 @@ jQuery('.mydiv')
 					            e.deltaX === e.pageX - pageX,
 					            e.deltaY === e.pageY - pageY);
 					
+					if ((e.deltaX === e.distX - distX) +
+					    (e.deltaY === e.distY - distY) +
+					    (e.deltaX === e.pageX - pageX) +
+					    (e.deltaY === e.pageY - pageY) !== 4) {
+						console.log('X', distX, e.distX, pageX, e.pageX, e.deltaX);
+						console.log('Y', distY, e.distY, pageY, e.pageY, e.deltaY);
+					}
+					
 					distY = e.distY;
 					distX = e.distX;
 					pageX = e.pageX;
