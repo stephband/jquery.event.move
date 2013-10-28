@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.3.1
+// 1.3.6
 //
 // Stephen Band
 //
