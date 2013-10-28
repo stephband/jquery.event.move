@@ -283,7 +283,7 @@ jQuery('.mydiv')
 		function logEvent(e){ window.console && console.log(e.type, e); }
 		
 		jQuery(document)
-		.bind('mousedown mouseup', logEvent)
+		//.bind('mousedown mouseup', logEvent)
 		.ready(function(){
 			var start,
 					box = jQuery('.test'),
@@ -334,6 +334,32 @@ jQuery('.mydiv')
 					});
 				}
 			});
+			
+			(function(){
+				// Test for correct deltaX and deltaY values
+				
+				var distX = 0, distY = 0, pageX = 0, pageY = 0;
+				
+				box
+				.bind('movestart', function(e) {
+					distX = e.distX;
+					distY = e.distY;
+					pageX = e.pageX;
+					pageY = e.pageY;
+				})
+				.bind('move', function(e){
+					// All these statements should be true
+					console.log(e.deltaX === e.distX - distX,
+					            e.deltaY === e.distY - distY,
+					            e.deltaX === e.pageX - pageX,
+					            e.deltaY === e.pageY - pageY);
+					
+					distY = e.distY;
+					distX = e.distX;
+					pageX = e.pageX;
+					pageY = e.pageY;
+				});
+			})();
 			
 			var rotation = 0;
 			
