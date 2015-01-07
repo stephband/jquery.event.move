@@ -1,44 +1,41 @@
-<h1>jquery.event.move</h1>
+# jQuery.event.move
 
-<p>Move events provide an easy way to set up press-move-release interactions on mouse and touch devices.</p>
+Move events provide an easy way to set up press-move-release interactions on mouse and touch devices.
 
+## Install
 
-<h2>Demo and docs</h2>
+With npm: `npm install jquery.event.move`
 
-<p><a href="http://stephband.info/jquery.event.move/">stephband.info/jquery.event.move/</a></p>
+Just import the file `js/jquery.event.move.js`.
 
-<h2>Move events</h2>
+## Demo and docs
 
-<dl>
-	<dt>movestart</dt>
-	<dd>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</dd>
+[stephband.info/jquery.event.move](http://stephband.info/jquery.event.move/)
+
+## Move events
+
+#### `movestart`
+
+Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.
 	
-	<dt>move</dt>
-	<dd>Fired on every animation frame where a mousemove or touchmove has changed the cursor position.</dd>
+#### `move`
+
+Fired on every animation frame where a mousemove or touchmove has changed the cursor position.
 	
-	<dt>moveend</dt>
-	<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
-</dl>
+#### `moveend`
 
-<p>Move event objects are augmented with the properties:</p>
+Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.
 
-<dl>
-  <dt>e.pageX<br/>e.pageY</dt>
-  <dd>Current page coordinates of pointer.</dd>
-  
-  <dt>e.startX<br/>e.startY</dt>
-  <dd>Page coordinates the pointer had at movestart.</dd>
-  
-  <dt>e.deltaX<br/>e.deltaY</dt>
-  <dd>Distance the pointer has moved since movestart.</dd>
+### Move event objects are augmented with the properties
 
-  <dt>e.velocityX<br/>e.velocityY</dt>
-  <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
-</dl>
+* `e.pageX`,`e.pageY`: Current page coordinates of pointer.
+* `e.startX`,`e.startY`: Page coordinates the pointer had at movestart.
+* `e.deltaX`,`e.deltaY`: Distance the pointer has moved since movestart.
+* `e.velocityX`,`e.velocityY`: Velocity in pixels/ms, averaged over the last few events.
 
-<p>Use them in the same way as you normally bind to events in jQuery:</p>
+Use them in the same way as you normally bind to events in jQuery:
 
-<pre><code class="js">
+```javascript
 jQuery('.mydiv')
 .bind('movestart', function(e) {
 	// move starts.
@@ -52,10 +49,12 @@ jQuery('.mydiv')
 	// move is complete!
 
 });
-</code></pre>
+```
 
-<p>To see an example of what could be done with it, <a href="http://stephband.info/jquery.event.move/">stephband.info/jquery.event.move/</a></p>
+## Example
 
-<h2>Tweet me</h2>
+[stephband.info/jquery.event.move](href="http://stephband.info/jquery.event.move)
 
-<p>If you use move events on something interesting, tweet me <a href="http://twitter.com/stephband">@stephband</a>!</p>
+## Tweet me
+
+If you use move events on something interesting, tweet me [@stephband](http://twitter.com/stephband)!
