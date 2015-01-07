@@ -1,0 +1,157 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install', '-g', 'pakmanager' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.32
+4 verbose cache add [ 'pakmanager', null ]
+5 verbose cache add name=undefined spec="pakmanager" args=["pakmanager",null]
+6 verbose parsed url { protocol: null,
+6 verbose parsed url   slashes: null,
+6 verbose parsed url   auth: null,
+6 verbose parsed url   host: null,
+6 verbose parsed url   port: null,
+6 verbose parsed url   hostname: null,
+6 verbose parsed url   hash: null,
+6 verbose parsed url   search: null,
+6 verbose parsed url   query: null,
+6 verbose parsed url   pathname: 'pakmanager',
+6 verbose parsed url   path: 'pakmanager',
+6 verbose parsed url   href: 'pakmanager' }
+7 silly lockFile ab50e5fc-pakmanager pakmanager
+8 verbose lock pakmanager /Users/Theo/.npm/ab50e5fc-pakmanager.lock
+9 silly lockFile ab50e5fc-pakmanager pakmanager
+10 silly lockFile ab50e5fc-pakmanager pakmanager
+11 verbose addNamed [ 'pakmanager', '' ]
+12 verbose addNamed [ null, '*' ]
+13 silly lockFile 15818177-pakmanager pakmanager@
+14 verbose lock pakmanager@ /Users/Theo/.npm/15818177-pakmanager.lock
+15 silly addNameRange { name: 'pakmanager', range: '*', hasData: false }
+16 verbose request where is /pakmanager
+17 verbose request registry https://registry.npmjs.org/
+18 verbose request id cbd59ee60a1af244
+19 verbose url raw /pakmanager
+20 verbose url resolving [ 'https://registry.npmjs.org/', './pakmanager' ]
+21 verbose url resolved https://registry.npmjs.org/pakmanager
+22 verbose request where is https://registry.npmjs.org/pakmanager
+23 info trying registry request attempt 1 at 15:16:20
+24 http GET https://registry.npmjs.org/pakmanager
+25 http 200 https://registry.npmjs.org/pakmanager
+26 silly registry.get cb [ 200,
+26 silly registry.get   { date: 'Wed, 07 Jan 2015 14:16:22 GMT',
+26 silly registry.get     server: 'CouchDB/1.5.0 (Erlang OTP/R14B04)',
+26 silly registry.get     etag: '"9IF66ILP8YAT6YIZFTOZAZ2KI"',
+26 silly registry.get     'content-type': 'application/json',
+26 silly registry.get     'cache-control': 'max-age=60',
+26 silly registry.get     'content-length': '37365',
+26 silly registry.get     'accept-ranges': 'bytes',
+26 silly registry.get     via: '1.1 varnish',
+26 silly registry.get     age: '0',
+26 silly registry.get     'x-served-by': 'cache-fra1247-FRA',
+26 silly registry.get     'x-cache': 'MISS',
+26 silly registry.get     'x-cache-hits': '0',
+26 silly registry.get     'x-timer': 'S1420640181.932315,VS0,VE102',
+26 silly registry.get     vary: 'Accept',
+26 silly registry.get     'keep-alive': 'timeout=10, max=50',
+26 silly registry.get     connection: 'Keep-Alive' } ]
+27 silly addNameRange number 2 { name: 'pakmanager', range: '*', hasData: true }
+28 silly addNameRange versions [ 'pakmanager',
+28 silly addNameRange   [ '0.8.1',
+28 silly addNameRange     '0.8.4',
+28 silly addNameRange     '0.8.5',
+28 silly addNameRange     '0.8.6',
+28 silly addNameRange     '0.8.7',
+28 silly addNameRange     '0.8.8',
+28 silly addNameRange     '0.11.3',
+28 silly addNameRange     '0.11.4',
+28 silly addNameRange     '0.11.5',
+28 silly addNameRange     '0.11.6',
+28 silly addNameRange     '0.11.7',
+28 silly addNameRange     '0.11.8',
+28 silly addNameRange     '0.12.0',
+28 silly addNameRange     '0.12.1' ] ]
+29 verbose addNamed [ 'pakmanager', '0.12.1' ]
+30 verbose addNamed [ '0.12.1', '0.12.1' ]
+31 silly lockFile dbf044d4-pakmanager-0-12-1 pakmanager@0.12.1
+32 verbose lock pakmanager@0.12.1 /Users/Theo/.npm/dbf044d4-pakmanager-0-12-1.lock
+33 silly lockFile 4d33d4d8-pakmanager-pakmanager-0-12-1-tgz https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz
+34 verbose lock https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz /Users/Theo/.npm/4d33d4d8-pakmanager-pakmanager-0-12-1-tgz.lock
+35 verbose addRemoteTarball [ 'https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz',
+35 verbose addRemoteTarball   '6b0cfc746678e3041ba452ca43a84bc5a6552406' ]
+36 info retry fetch attempt 1 at 15:16:20
+37 verbose fetch to= /var/folders/gk/p5pwrdzx5m16m1yv7c4r52r00000gn/T/npm-1965-nMefuSGA/registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz
+38 http GET https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz
+39 http 200 https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz
+40 silly lockFile 4d33d4d8-pakmanager-pakmanager-0-12-1-tgz https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz
+41 silly lockFile 4d33d4d8-pakmanager-pakmanager-0-12-1-tgz https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz
+42 silly lockFile dbf044d4-pakmanager-0-12-1 pakmanager@0.12.1
+43 silly lockFile dbf044d4-pakmanager-0-12-1 pakmanager@0.12.1
+44 silly lockFile 15818177-pakmanager pakmanager@
+45 silly lockFile 15818177-pakmanager pakmanager@
+46 silly resolved [ { author:
+46 silly resolved      { name: 'AJ ONeal',
+46 silly resolved        email: 'coolaj86@gmail.com',
+46 silly resolved        url: 'http://coolaj86.info' },
+46 silly resolved     name: 'pakmanager',
+46 silly resolved     description: 'A demo package manager using the pakman API.',
+46 silly resolved     version: '0.12.1',
+46 silly resolved     homepage: 'https://github.com/coolaj86/node-pakman',
+46 silly resolved     repository:
+46 silly resolved      { type: 'git',
+46 silly resolved        url: 'git://github.com/coolaj86/node-pakman.git' },
+46 silly resolved     main: 'lib/index',
+46 silly resolved     lib: 'lib',
+46 silly resolved     bin: { pakmanager: 'bin/pakmanager.js' },
+46 silly resolved     scripts: { test: 'pakmanager' },
+46 silly resolved     engines: { node: '>=0.4' },
+46 silly resolved     dependencies: { pakman: '>=0.11.5 <0.12.0', argparse: '>=0.1.5 <0.2.0' },
+46 silly resolved     devDependencies: {},
+46 silly resolved     readme: 'pakmanager\n===\n\nAn example (and fully functional) package manager built on the [`pakman`](http://github.com/coolaj86/node-pakman) and `npm` APIs.\n\nInstallation\n===\n\nIf you haven\'t already set your NPM author info, now you should:\n\n    npm set init.author.name "Your Name"\n    npm set init.author.email "you@example.com"\n    npm set init.author.url "http://yourblog.com"\n\n    npm adduser\n\nAnd install pakmanager:\n\n    npm install -g pakmanager\n\nUsage\n===\n\nIn short: run `pakmanager build` wherever `package.json` exists\n\nCreate your project\n\n    PROJECT=~/Code/some-project\n    mkdir -p ${PROJECT}/lib\n    cd ${PROJECT}\n    touch lib/index.js\n    npm init\n\nNOTE: Your code will be wrapped in a strict-mode closure - so don\'t use "The Bad Parts" TM such as using `this` to refer to the global object. See [jshint](http://jshint.com).\n\n    (function () { "use strict";\n      var module = { exports: {} };\n      /*** your code pasted here ***/ \n      provide(\'providename\', module);\n    }());\n\nMark as private if need be by editing `package.json` and adding `"private": true,`\n\nTest and build your module\n\n    pakmanager deps\n    pakmanager build\n    # edit pakmanaged-test.js\n    # open pakmanaged.html to see about any errors\n\nAnd you might want to publish your module\n\n    npm publish ./\n\n\nCLI / API\n===\n\n    pakmanager deps       # list all dependencies\n    pakmanager build      # builds package.json.browserDependencies and package.json.main\n\n    rm -rf pakmanaged.js ./node_modules # clean old builds\n\nInternal API\n===\n\n    #create(config)\n    #init(cb, config)\n\n    config.packageRoot\n\nTODO\n===\n\nlinting\n\njshint code and report errors\n\nAdd to API\n\n    pakmanager init       # creates / updates package.json\n    pakmanager install    # installs package.json.browserDependencies into ./node_modules\n    pakmanager clean      # rm -rf ./node_modules\n    pakmanager rebuild    # clean, build\n    pakmanager add        # add module@ver to package.json.browserDependencies\n    pakmanager set        # set module@ver in package.json.browserDependencies\n',
+46 silly resolved     readmeFilename: 'README.md',
+46 silly resolved     _id: 'pakmanager@0.12.1',
+46 silly resolved     dist:
+46 silly resolved      { shasum: '6b0cfc746678e3041ba452ca43a84bc5a6552406',
+46 silly resolved        tarball: 'http://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz' },
+46 silly resolved     _from: 'pakmanager@',
+46 silly resolved     _npmVersion: '1.2.15',
+46 silly resolved     _npmUser: { name: 'coolaj86', email: 'coolaj86@gmail.com' },
+46 silly resolved     maintainers: [ [Object] ],
+46 silly resolved     directories: {},
+46 silly resolved     _shasum: '6b0cfc746678e3041ba452ca43a84bc5a6552406',
+46 silly resolved     _resolved: 'https://registry.npmjs.org/pakmanager/-/pakmanager-0.12.1.tgz' } ]
+47 info install pakmanager@0.12.1 into /usr/local/lib
+48 info installOne pakmanager@0.12.1
+49 verbose lib/node_modules/pakmanager unbuild
+50 verbose tar unpack /Users/Theo/.npm/pakmanager/0.12.1/package.tgz
+51 silly lockFile 1b13edd4-ocal-lib-node-modules-pakmanager tar:///usr/local/lib/node_modules/pakmanager
+52 verbose lock tar:///usr/local/lib/node_modules/pakmanager /Users/Theo/.npm/1b13edd4-ocal-lib-node-modules-pakmanager.lock
+53 silly lockFile 72150d1c-pm-pakmanager-0-12-1-package-tgz tar:///Users/Theo/.npm/pakmanager/0.12.1/package.tgz
+54 verbose lock tar:///Users/Theo/.npm/pakmanager/0.12.1/package.tgz /Users/Theo/.npm/72150d1c-pm-pakmanager-0-12-1-package-tgz.lock
+55 silly gunzTarPerm modes [ '755', '644' ]
+56 error Error: EACCES, mkdir '/usr/local/lib/node_modules/pakmanager'
+56 error  { [Error: EACCES, mkdir '/usr/local/lib/node_modules/pakmanager']
+56 error   errno: 3,
+56 error   code: 'EACCES',
+56 error   path: '/usr/local/lib/node_modules/pakmanager',
+56 error   fstream_type: 'Directory',
+56 error   fstream_path: '/usr/local/lib/node_modules/pakmanager',
+56 error   fstream_class: 'DirWriter',
+56 error   fstream_stack:
+56 error    [ '/usr/local/lib/node_modules/npm/node_modules/fstream/lib/dir-writer.js:36:23',
+56 error      '/usr/local/lib/node_modules/npm/node_modules/mkdirp/index.js:46:53',
+56 error      'Object.oncomplete (fs.js:107:15)' ] }
+57 error Please try running this command again as root/Administrator.
+58 error System Darwin 13.4.0
+59 error command "node" "/usr/local/bin/npm" "install" "-g" "pakmanager"
+60 error cwd /Users/Theo/Sites/tempo/jquery.event.move
+61 error node -v v0.10.32
+62 error npm -v 1.4.28
+63 error path /usr/local/lib/node_modules/pakmanager
+64 error fstream_path /usr/local/lib/node_modules/pakmanager
+65 error fstream_type Directory
+66 error fstream_class DirWriter
+67 error code EACCES
+68 error errno 3
+69 error stack Error: EACCES, mkdir '/usr/local/lib/node_modules/pakmanager'
+70 error fstream_stack /usr/local/lib/node_modules/npm/node_modules/fstream/lib/dir-writer.js:36:23
+70 error fstream_stack /usr/local/lib/node_modules/npm/node_modules/mkdirp/index.js:46:53
+70 error fstream_stack Object.oncomplete (fs.js:107:15)
+71 verbose exit [ 3, true ]
