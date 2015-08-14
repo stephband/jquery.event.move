@@ -197,7 +197,8 @@
 	function mousedown(e){
 		var data;
 
-		if (!isLeftButton(e)) { return; }
+		// Allow modified mousedowns to pass
+		//if (!isLeftButton(e)) { return; }
 
 		data = {
 			target: e.target,
@@ -307,6 +308,9 @@
 		// Create a movestart object with some special properties that
 		// are passed only to the movestart handlers.
 		template.type = 'movestart';
+		template.altKey = e.altKey;
+		template.ctrlKey = e.ctrlKey;
+		template.shiftKey = e.shiftKey;
 		template.distX = distX;
 		template.distY = distY;
 		template.deltaX = distX;
