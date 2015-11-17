@@ -34,7 +34,7 @@
 
 	var // Number of pixels a pressed pointer travels before movestart
 	    // event is fired.
-	    threshold = 6,
+	    threshold = 3,
 	
 	    add = jQuery.event.add,
 	
