@@ -56,6 +56,14 @@ jQuery('.mydiv')
 
 <p>To see an example of what could be done with it, <a href="http://stephband.info/jquery.event.move/">stephband.info/jquery.event.move/</a></p>
 
+<h2>CommonJS</h2>
+
+<p>If you're using Browserify, or any other CommonJS-compatible module system, you can require this script by passing it your jQuery reference. For example,<p>
+
+<pre><code class="js">
+require('./path/to/jquery.event.move.js')(jQuery);
+</code></pre>
+
 <h2>Tweet me</h2>
 
 <p>If you use move events on something interesting, tweet me <a href="http://twitter.com/stephband">@stephband</a>!</p>
