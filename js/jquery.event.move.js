@@ -574,15 +574,14 @@
 	// really need. IE7/8 do not have Array#indexOf(), but nor do they
 	// have touch events, so let's assume we can ignore them.
 	if (typeof Array.prototype.indexOf === 'function') {
-		(function(jQuery, undefined){
-			var props = ["changedTouches", "targetTouches"],
-			    l = props.length;
-			
-			while (l--) {
-				if (jQuery.event.props.indexOf(props[l]) === -1) {
-					jQuery.event.props.push(props[l]);
+		["changedTouches", "targetTouches"].forEach(function(prop){
+			if (jQuery.event.addProp) { // since jQuery 3
+				jQuery.event.addProp(prop);
+			} else {
+				if (jQuery.event.props.indexOf(prop) === -1) {
+					jQuery.event.props.push(prop);
 				}
 			}
-		})(jQuery);
+		});
 	};
 });
