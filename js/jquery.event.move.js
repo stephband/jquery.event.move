@@ -1,6 +1,6 @@
 // jquery.event.move
 //
-// 1.3.6
+// 1.3.7
 //
 // Stephen Band
 //
@@ -32,23 +32,13 @@
 	}
 })(function(jQuery, undefined){
 
-	var // Number of pixels a pressed pointer travels before movestart
-	    // event is fired.
-	    threshold = 6,
-	
-	    add = jQuery.event.add,
-	
-	    remove = jQuery.event.remove,
+	// Number of pixels a pressed pointer travels before movestart
+	// event is fired.
+	var threshold = 6;
 
-	    // Just sugar, so we can have arguments in the same order as
-	    // add and remove.
-	    trigger = function(node, type, data) {
-	    	jQuery.event.trigger(type, data, node);
-	    },
-
-	    // Shim for requestAnimationFrame, falling back to timer. See:
-	    // see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-	    requestFrame = (function(){
+	// Shim for requestAnimationFrame, falling back to timer. See:
+	// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+	var requestFrame = (function(){
 	    	return (
 	    		window.requestAnimationFrame ||
 	    		window.webkitRequestAnimationFrame ||
@@ -61,26 +51,81 @@
 	    			}, 25);
 	    		}
 	    	);
-	    })(),
-	    
-	    ignoreTags = {
+	    })();
+
+	var ignoreTags = {
 	    	textarea: true,
 	    	input: true,
 	    	select: true,
 	    	button: true
-	    },
-	    
-	    mouseevents = {
-	    	move: 'mousemove',
-	    	cancel: 'mouseup dragstart',
-	    	end: 'mouseup'
-	    },
-	    
-	    touchevents = {
-	    	move: 'touchmove',
-	    	cancel: 'touchend',
-	    	end: 'touchend'
 	    };
+
+	var mouseevents = {
+	    	move:   'mousemove',
+	    	cancel: 'mouseup dragstart',
+	    	end:    'mouseup'
+	    };
+
+	var touchevents = {
+	    	move:   'touchmove',
+	    	cancel: 'touchend',
+	    	end:    'touchend'
+	    };
+
+	var rspaces = /\s+/;
+
+
+	// DOM Events
+
+	var eventOptions = { bubbles: true };
+
+	var eventsSymbol = Symbol();
+
+	function createEvent(type) {
+		return new CustomEvent(type, eventOptions);
+	}
+
+	function getEvents(node) {
+		return node[eventsSymbol] || (node[eventsSymbol] = {});
+	}
+
+	function on(node, types, fn, data, selector) {
+		types = types.split(rspaces);
+
+		var events = getEvents(node);
+		var handlers, type;
+
+		function handler(e) { fn(e, data); }
+
+		for (type of types) {
+			handlers = events[type] || (events[type] = []);
+			handlers.push([fn, handler]);
+			node.addEventListener(type, handler);
+		}
+	}
+
+	function off(node, types, fn, selector) {
+		types = types.split(rspaces);
+
+		var type, handlers, i;
+
+		for (type of types) {
+			handlers = events[type] || (events[type] = []);
+			i = handlers.length;
+			while (i--) {
+				if (handlers[i][0] === fn) {
+					node.removeEventListener(type, handlers[i][1]);
+				}
+			}
+		}
+	}
+
+	function trigger(node, type) {
+		// Don't cache events. It prevents you from triggering an event of a
+		// given type from inside the handler of another event of that type.
+		var event = createEvent(type);
+		node.dispatchEvent();
+	}
 
 
 	// Constructors
@@ -131,7 +176,9 @@
 
 
 	// Functions
-	
+
+	function noop() {}
+
 	function returnTrue() {
 		return true;
 	}
@@ -307,6 +354,9 @@
 		// Create a movestart object with some special properties that
 		// are passed only to the movestart handlers.
 		template.type = 'movestart';
+		template.altKey = e.altKey;
+		template.ctrlKey = e.ctrlKey;
+		template.shiftKey = e.shiftKey;
 		template.distX = distX;
 		template.distY = distY;
 		template.deltaX = distX;
@@ -544,11 +594,11 @@
 		setup: function() {
 			// Bind a noop to movestart. Why? It's the movestart
 			// setup that decides whether other move events are fired.
-			add(this, 'movestart.move', jQuery.noop);
+			add(this, 'movestart.move', noop);
 		},
 		
 		teardown: function() {
-			remove(this, 'movestart.move', jQuery.noop);
+			remove(this, 'movestart.move', noop);
 		}
 	};
 	
@@ -556,11 +606,11 @@
 		setup: function() {
 			// Bind a noop to movestart. Why? It's the movestart
 			// setup that decides whether other move events are fired.
-			add(this, 'movestart.moveend', jQuery.noop);
+			add(this, 'movestart.moveend', noop);
 		},
 		
 		teardown: function() {
-			remove(this, 'movestart.moveend', jQuery.noop);
+			remove(this, 'movestart.moveend', noop);
 		}
 	};
 
