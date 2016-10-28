@@ -21,12 +21,13 @@
 // velocityX:
 // velocityY: Average velocity over last few events.
 
-(function (fn) {
+
+(function(fn) {
 	if (typeof define === 'function' && define.amd) {
-		// AMD. Register as an anonymous module.
-		define([], fn);
+        define([], fn);
+    } else if ((typeof module !== "undefined" && module !== null) && module.exports) {
+        module.exports = fn;
 	} else {
-		// Browser globals
 		fn();
 	}
 })(function(){
