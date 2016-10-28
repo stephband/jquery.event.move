@@ -78,7 +78,7 @@
 
 	// DOM Events
 
-	var eventOptions = { bubbles: true };
+	var eventOptions = { bubbles: true, cancelable: true };
 
 	var eventsSymbol = Symbol();
 
@@ -268,21 +268,19 @@
 	}
 
 	function touchstart(e) {
-		var touch, template;
-
 		// Don't get in the way of interaction with form elements
 		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
 
-		touch = e.changedTouches[0];
+		var touch = e.changedTouches[0];
 
 		// iOS live updates the touch objects whereas Android gives us copies.
 		// That means we can't trust the touchstart object to stay the same,
 		// so we must copy the data. This object acts as a template for
 		// movestart, move and moveend event objects.
-		template = {
-			target: touch.target,
-			startX: touch.pageX,
-			startY: touch.pageY,
+		var template = {
+			target:     touch.target,
+			startX:     touch.pageX,
+			startY:     touch.pageY,
 			identifier: touch.identifier
 		};
 
@@ -299,13 +297,12 @@
 		checkThreshold(e, data, touch, removeTouch);
 	}
 
-	function touchend(e) {
-		var template = e.data,
-		    touch = identifiedTouch(e.changedTouches, template.identifier);
+	function touchend(e, data) {
+		var touch = identifiedTouch(e.changedTouches, data.identifier);
 
 		if (!touch) { return; }
 
-		removeTouch(template.identifier);
+		removeTouch(data.identifier);
 	}
 
 	function removeTouch(identifier) {
@@ -351,13 +348,15 @@
 			touches.length :
 			1 ;
 
-		// The _handled method is fired to tell the default movestart
-		// handler that one of the move events is bound.
-		//template._handled = handled;
-			
-		// Pass the touchmove event so it can be prevented if or when
-		// movestart is handled.
-		template._preventTouchmoveDefault = function() {
+		// Pass the touchmove event so it can be prevented if movestart
+		// is handled
+		//template._preventTouchmoveDefault = function() {
+		//	e.preventDefault();
+		//};
+
+		template.enableMove = function() {
+			this.moveEnabled = true;
+			this.enableMove = noop;
 			e.preventDefault();
 		};
 
@@ -463,11 +462,10 @@
 	// Set up the DOM
 
 	function movestart(e) {
-		var event, data;
-
 		if (e.defaultPrevented) { return; }
+		if (!e.moveEnabled) { return; }
 
-		event = {
+		var event = {
 			startX:        e.startX,
 			startY:        e.startY,
 			pageX:         e.pageX,
@@ -483,7 +481,7 @@
 			finger:        e.finger
 		};
 
-		data = {
+		var data = {
 			target:    e.target,
 			event:     event,
 			timer:     new Timer(update),
@@ -492,9 +490,8 @@
 		};
 
 		function update(time) {
-			var target = data.target;
 			updateEvent(event, data.touch, data.timeStamp);
-			trigger(target, 'move', event);
+			trigger(data.target, 'move', event);
 		}
 
 		if (e.identifier === undefined) {
@@ -509,7 +506,6 @@
 			// anything defaulty.
 			// Todo: we removed namespaces from these events - how do they
 			// get unbound?
-			e._preventTouchmoveDefault();
 			on(document, touchevents.move, activeTouchmove, data);
 			on(document, touchevents.end, activeTouchend, data);
 		}
@@ -520,7 +516,7 @@
 	on(document, 'movestart', movestart);
 
 
-	// jQuery events
+	// jQuery special events
 	//
 	// jQuery event objects are copies of DOM event objects. They need
 	// a little help copying the move properties across.
@@ -529,20 +525,65 @@
 
 	var properties = ("startX startY pageX pageY distX distY deltaX deltaY velocityX velocityY").split(' ');
 
-	jQuery.event.special.movestart =
-	jQuery.event.special.move =
-	jQuery.event.special.moveend = {
-		add: function addMethod(handleObj) {
-			var handler = handleObj.handler;
+	function enableMove1(e) { e.enableMove(); }
+	function enableMove2(e) { e.enableMove(); }
+	function enableMove3(e) { e.enableMove(); }
 
-			handleObj.handler = function(e) {
-				// Copy move properties across from originalEvent
-				var property;
-				for (property of properties) {
-					e[property] = e.originalEvent[property];
-				}
-				handler.apply(this, arguments);
-			};
-		}
+	function add(handleObj) {
+		var handler = handleObj.handler;
+
+		handleObj.handler = function(e) {
+			// Copy move properties across from originalEvent
+			var property;
+			for (property of properties) {
+				e[property] = e.originalEvent[property];
+			}
+			handler.apply(this, arguments);
+		};
+	}
+
+	jQuery.event.special.movestart = {
+		setup: function() {
+			// Movestart must be enabled to allow other move events
+			on(this, 'movestart', enableMove1);
+
+			// Do listen to DOM events
+			return false;
+		},
+
+		teardown: function() {
+			off(this, 'movestart', enableMove1);
+			return false;
+		},
+
+		add: add
+	};
+
+	jQuery.event.special.move = {
+		setup: function() {
+			on(this, 'movestart', enableMove2);
+			return false;
+		},
+
+		teardown: function() {
+			off(this, 'movestart', enableMove2);
+			return false;
+		},
+
+		add: add
+	};
+
+	jQuery.event.special.moveend = {
+		setup: function() {
+			on(this, 'movestart', enableMove3);
+			return false;
+		},
+
+		teardown: function() {
+			off(this, 'movestart', enableMove3);
+			return false;
+		},
+
+		add: add
 	};
 });
