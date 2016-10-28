@@ -24,8 +24,6 @@ was jQuery special events only) – jQuery is no longer a requirement.
 	<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
 </dl>
 
-## Usage
-
 Move event objects are augmented with the properties:
 
 <dl>
@@ -42,6 +40,7 @@ Move event objects are augmented with the properties:
   <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
 </dl>
 
+## Usage
 
 Use them in the same way as you bind to any other DOM event:
 
