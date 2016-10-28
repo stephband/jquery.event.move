@@ -1,6 +1,6 @@
-// jquery.event.move
+// DOM.event.move
 //
-// 1.3.7
+// 2.0.0
 //
 // Stephen Band
 //
@@ -11,15 +11,15 @@
 // have the properties:
 //
 // pageX:
-// pageY:   Page coordinates of pointer.
+// pageY:     Page coordinates of pointer.
 // startX:
-// startY:  Page coordinates of pointer at movestart.
+// startY:    Page coordinates of pointer at movestart.
 // distX:
-// distY:  Distance the pointer has moved since movestart.
+// distY:     Distance the pointer has moved since movestart.
 // deltaX:
-// deltaY:  Distance the finger has moved since last event.
+// deltaY:    Distance the finger has moved since last event.
 // velocityX:
-// velocityY:  Average velocity over last few events.
+// velocityY: Average velocity over last few events.
 
 (function (fn) {
 	if (typeof define === 'function' && define.amd) {

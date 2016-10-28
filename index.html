@@ -15,8 +15,11 @@ title: jQuery.event.move
 	<link rel="icon" type="image/png" href="images/favicon.png" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
+	<link rel="stylesheet" type="text/css" href="http://stephen.band/bolt/package/css/bolt-0.9.8.css" />
+
 	<link rel="stylesheet" type="text/css" href="http://stephband.info/css/template.min.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.info/css/template.theme.min.css" />
+
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/site.layout.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/docs.classes.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/site.highlight.light.css" />
@@ -84,31 +87,57 @@ title: jQuery.event.move
 		  <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
 		</dl>
 		
-		
 		<h2 id="how">How to use move events</h2>
 		
+		<div class="grid-block block">
+			<div class="grid-1/2 block">
+				<h3 class="text-4">Native DOM</h3>
+{% highlight js %}
+var node = document.querySelector('.mydiv');
+
+// A movestart event must be bound and explicitly enabled
+node.addEventListener('movestart', function(e) {
+  e.enableMove();
+});
+
+node.addEventListener('move', function(e) {
+  // move .mydiv horizontally
+  this.style.left = (e.startX + e.distX) + 'px';
+})
+
+node.addEventListener('moveend', function() {
+  // move is complete!
+});{% endhighlight %}
+			</div
+			
+			><div class="grid-1/2 block">
+				<h3 class="text-4">jQuery</h3>
 {% highlight js %}
 jQuery('.mydiv')
-.bind('move', function(e) {
+.on('move', function(e) {
   // move .mydiv horizontally
   jQuery(this).css({ left: e.startX + e.distX });
 })
-.bind('moveend', function() {
+.on('moveend', function() {
   // move is complete!
 });{% endhighlight %}
-		
-		<h2 id="why1">Why not just use raw mouse or touch events?</h2>
-		
-		<p>Well, yes, you could. But jquery.event.move abstracts away the details that need attention when writing this kind of interaction model with mouse and touch events:</p>
-		
+				<p>(jQuery's special event system does the work of enabling
+				move events on movestart.)</p>
+			</div>
+		</div>
+
+		<h2 id="why1">Why not just use mouse or touch events?</h2>
+
+		<p>Well, yes, you can. But move events abstract away the details that need attention when writing this kind of interaction model with mouse and touch events:</p>
+
 		<ul>
 			<li>Supports mouse and touch devices, exposing the same event API for both</li>
 			<li>Throttles moves to animation frames, preventing unneccesary calls</li>
 			<li>Ignores the right mouse button and clicks with modifier keys</li>
 			<li>Prevents text selection while moving</li>
-			<li>Prevents scrolling of touch interfaces while moving</li>
+			<!--li>Prevents scrolling of touch interfaces while moving</li-->
 			<li>Handles multiple touches</li>
-			<li>Deals with bug (Chrome, possibly all Android) where changedTouches includes touches which haven't changed</li>
+			<li>Deals with bug (Chrome, possibly all Android) where changedTouches includes touches that have not changed</li>
 			<li>Handles browser differences where touches in iOS are live objects, where in Android they are static</li>
 			<li>Does not bork interaction with form inputs inside moveable nodes</li>
 			<li>Suppresses drag and drop events</li>
@@ -127,7 +156,7 @@ jQuery('.mydiv')
 		<p>Where both a <code>dragstart</code> and any move event are bound to the same node, drag events are suppressed.</p>
 		
 		
-		<h2 id="where">Where is jquery.event.move being used?</h2>
+		<!--h2 id="where">Where is jquery.event.move being used?</h2>
 		
 		<p>It's part of my front-end toolkit, <a href="http://stephband.info/bolt">Bolt</a>. It's also used for:</p>
 	
@@ -136,7 +165,7 @@ jQuery('.mydiv')
 			<li><a href="http://stephband.info/jquery.event.swipe">jquery.event.swipe</a></li>
 		</ul>
 		
-		<p>Do let me know at <a href="http://twitter.com/stephband">@stephband</a> if you use it in your project. Cheers!</p>
+		<p>Do let me know at <a href="http://twitter.com/stephband">@stephband</a> if you use it in your project. Cheers!</p-->
 	</div>
 
 	<footer class="site_footer">
