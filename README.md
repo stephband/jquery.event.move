@@ -24,6 +24,8 @@ was jQuery special events only) – jQuery is no longer a requirement.
 	<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
 </dl>
 
+## Usage
+
 Move event objects are augmented with the properties:
 
 <dl>
