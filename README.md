@@ -5,7 +5,9 @@ mouse and touch devices.
 
 *UPDATE 2.0*: `move` events are now compatible with jQuery 3.x. In addition, the
 underlying implementation is rewritten using vanilla DOM (where before it
-was jQuery special events only) – jQuery is no longer a requirement.
+was jQuery special events only) – jQuery is no longer a requirement. However,
+if you do not have jQuery you will require a polyfill for Object.assign to
+support older browsers. I can recommend <a href="https://github.com/cruncher/object.assign">Object.assign polyfill</a> :)
 
 ##Demo and docs
 
