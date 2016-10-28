@@ -17,7 +17,7 @@
         "block-scoped-var": "off",
         "block-spacing": ["error", "always"],
         "brace-style": "off",
-        "callback-return": "error",
+        "callback-return": "off",
         "camelcase": "off",
         "class-methods-use-this": "error",
         "comma-dangle": [

@@ -40,38 +40,38 @@
 	// Shim for requestAnimationFrame, falling back to timer. See:
 	// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 	var requestFrame = (function(){
-	    	return (
-	    		window.requestAnimationFrame ||
-	    		window.webkitRequestAnimationFrame ||
-	    		window.mozRequestAnimationFrame ||
-	    		window.oRequestAnimationFrame ||
-	    		window.msRequestAnimationFrame ||
-	    		function(fn, element){
-	    			return window.setTimeout(function(){
-	    				fn();
-	    			}, 25);
-	    		}
-	    	);
-	    })();
+		return (
+			window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			function(fn, element){
+				return window.setTimeout(function(){
+					fn();
+				}, 25);
+			}
+		);
+	})();
 
 	var ignoreTags = {
-	    	textarea: true,
-	    	input: true,
-	    	select: true,
-	    	button: true
-	    };
+			textarea: true,
+			input: true,
+			select: true,
+			button: true
+		};
 
 	var mouseevents = {
-	    	move:   'mousemove',
-	    	cancel: 'mouseup dragstart',
-	    	end:    'mouseup'
-	    };
+		move:   'mousemove',
+		cancel: 'mouseup dragstart',
+		end:    'mouseup'
+	};
 
 	var touchevents = {
-	    	move:   'touchmove',
-	    	cancel: 'touchend',
-	    	end:    'touchend'
-	    };
+		move:   'touchmove',
+		cancel: 'touchend',
+		end:    'touchend'
+	};
 
 	var rspaces = /\s+/;
 
@@ -80,7 +80,7 @@
 
 	var eventOptions = { bubbles: true, cancelable: true };
 
-	var eventsSymbol = Symbol();
+	var eventsSymbol = Symbol('events');
 
 	function createEvent(type) {
 		return new CustomEvent(type, eventOptions);
@@ -238,8 +238,6 @@
 	// Handlers that decide when the first movestart is triggered
 	
 	function mousedown(e){
-		var data;
-
 		// Ignore non-primary buttons
 		if (!isPrimaryButton(e)) { return; }
 
@@ -265,7 +263,7 @@
 
 	function touchstart(e) {
 		// Don't get in the way of interaction with form elements
-		if (ignoreTags[ e.target.tagName.toLowerCase() ]) { return; }
+		if (ignoreTags[e.target.tagName.toLowerCase()]) { return; }
 
 		var touch = e.changedTouches[0];
 
@@ -412,7 +410,7 @@
 		if (!touch) { return; }
 
 		removeActiveTouch(data);
-		endEvent(e.target, event, timer);
+		endEvent(target, event, timer);
 	}
 
 	function removeActiveTouch(data) {
