@@ -31,11 +31,11 @@
 	}
 })(function(){
 
-	var assign = Object.assign;
+	var assign = Object.assign || window.jQuery && jQuery.extend;
 
 	// Number of pixels a pressed pointer travels before movestart
 	// event is fired.
-	var threshold = 6;
+	var threshold = 8;
 
 	// Shim for requestAnimationFrame, falling back to timer. See:
 	// see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -120,6 +120,7 @@
 			while (i--) {
 				if (handlers[i][0] === fn) {
 					node.removeEventListener(type, handlers[i][1]);
+					handlers.splice(i, 1);
 				}
 			}
 		}
@@ -219,8 +220,8 @@
 		}
 	}
 
-	function changedTouch(e, event) {
-		var touch = identifiedTouch(e.changedTouches, event.identifier);
+	function changedTouch(e, data) {
+		var touch = identifiedTouch(e.changedTouches, data.identifier);
 
 		// This isn't the touch you're looking for.
 		if (!touch) { return; }
@@ -228,7 +229,7 @@
 		// Chrome Android (at least) includes touches that have not
 		// changed in e.changedTouches. That's a bit annoying. Check
 		// that this touch has changed.
-		if (touch.pageX === event.pageX && touch.pageY === event.pageY) { return; }
+		if (touch.pageX === data.pageX && touch.pageY === data.pageY) { return; }
 
 		return touch;
 	}
@@ -245,20 +246,15 @@
 		// Ignore form and interactive elements
 		if (isIgnoreTag(e)) { return; }
 
-		data = {
-			startX: e.pageX,
-			startY: e.pageY
-		};
-
-		on(document, mouseevents.move, mousemove, data);
-		on(document, mouseevents.cancel, mouseend, data);
+		on(document, mouseevents.move, mousemove, e);
+		on(document, mouseevents.cancel, mouseend, e);
 	}
 
 	function mousemove(e, data){
 		checkThreshold(e, data, e, removeMouse);
 	}
 
-	function mouseend(e) {
+	function mouseend(e, data) {
 		removeMouse();
 	}
 
@@ -277,21 +273,23 @@
 		// That means we can't trust the touchstart object to stay the same,
 		// so we must copy the data. This object acts as a template for
 		// movestart, move and moveend event objects.
-		var template = {
+		var data = {
 			target:     touch.target,
-			startX:     touch.pageX,
-			startY:     touch.pageY,
-			identifier: touch.identifier
+			pageX:      touch.pageX,
+			pageY:      touch.pageY,
+			identifier: touch.identifier,
+
+			// The only way to make handlers individually unbindable is by
+			// making them unique.
+			touchmove:  function(e, data) { touchmove(e, data); },
+			touchend:   function(e, data) { touchend(e, data); }
 		};
 
-		// Todo: without namespaces, how do we do this?...
-		// Use the touch identifier as a namespace, so that we can later
-		// remove handlers pertaining only to this touch.
-		on(document, touchevents.move, touchmove, template);
-		on(document, touchevents.cancel, touchend, template);
+		on(document, touchevents.move, data.touchmove, data);
+		on(document, touchevents.cancel, data.touchend, data);
 	}
 
-	function touchmove(e, data){
+	function touchmove(e, data) {
 		var touch = changedTouch(e, data);
 		if (!touch) { return; }
 		checkThreshold(e, data, touch, removeTouch);
@@ -299,72 +297,60 @@
 
 	function touchend(e, data) {
 		var touch = identifiedTouch(e.changedTouches, data.identifier);
-
 		if (!touch) { return; }
-
-		removeTouch(data.identifier);
+		removeTouch(data);
 	}
 
-	function removeTouch(identifier) {
-		off(document, '.' + identifier, touchmove);
-		off(document, '.' + identifier, touchend);
+	function removeTouch(data) {
+		off(document, touchevents.move, data.touchmove);
+		off(document, touchevents.cancel, data.touchend);
 	}
 
-
-	// Logic for deciding when to trigger a movestart.
-
-	function checkThreshold(e, template, touch, fn) {
-		var distX = touch.pageX - template.startX;
-		var distY = touch.pageY - template.startY;
+	function checkThreshold(e, data, touch, fn) {
+		var distX = touch.pageX - data.pageX;
+		var distY = touch.pageY - data.pageY;
 
 		// Do nothing if the threshold has not been crossed.
 		if ((distX * distX) + (distY * distY) < (threshold * threshold)) { return; }
 
-		triggerStart(e, template, touch, distX, distY, fn);
+		triggerStart(e, data, touch, distX, distY, fn);
 	}
 
-	function triggerStart(e, template, touch, distX, distY, fn) {
-		var touches, time;
-
-		touches = e.targetTouches;
-		time = e.timeStamp - template.timeStamp;
+	function triggerStart(e, data, touch, distX, distY, fn) {
+		var touches = e.targetTouches;
+		var time = e.timeStamp - data.timeStamp;
 
 		// Create a movestart object with some special properties that
 		// are passed only to the movestart handlers.
-		//template.type = 'movestart';
-		template.altKey = e.altKey;
-		template.ctrlKey = e.ctrlKey;
-		template.shiftKey = e.shiftKey;
-		template.distX = distX;
-		template.distY = distY;
-		template.deltaX = distX;
-		template.deltaY = distY;
-		template.pageX = touch.pageX;
-		template.pageY = touch.pageY;
-		template.velocityX = distX / time;
-		template.velocityY = distY / time;
-		template.targetTouches = touches;
-		template.finger = touches ?
-			touches.length :
-			1 ;
-
-		// Pass the touchmove event so it can be prevented if movestart
-		// is handled
-		//template._preventTouchmoveDefault = function() {
-		//	e.preventDefault();
-		//};
-
-		template.enableMove = function() {
-			this.moveEnabled = true;
-			this.enableMove = noop;
-			e.preventDefault();
+		var template = {
+			altKey:     e.altKey,
+			ctrlKey:    e.ctrlKey,
+			shiftKey:   e.shiftKey,
+			startX:     data.pageX,
+			startY:     data.pageY,
+			distX:      distX,
+			distY:      distY,
+			deltaX:     distX,
+			deltaY:     distY,
+			pageX:      touch.pageX,
+			pageY:      touch.pageY,
+			velocityX:  distX / time,
+			velocityY:  distY / time,
+			identifier: data.identifier,
+			targetTouches: touches,
+			finger: touches ? touches.length : 1,
+			enableMove: function() {
+				this.moveEnabled = true;
+				this.enableMove = noop;
+				e.preventDefault();
+			}
 		};
 
 		// Trigger the movestart event.
-		trigger(e.target, 'movestart', template);
+		trigger(data.target, 'movestart', template);
 
 		// Unbind handlers that tracked the touch or mouse up till now.
-		fn(template.identifier);
+		fn(data);
 	}
 
 
@@ -399,10 +385,10 @@
 		off(document, mouseevents.end, activeMouseend);
 	}
 
-	function activeTouchmove(e) {
-		var event = e.data.event,
-		    timer = e.data.timer,
-		    touch = changedTouch(e, event);
+	function activeTouchmove(e, data) {
+		var event = data.event;
+		var timer = data.timer;
+		var touch = changedTouch(e, event);
 
 		if (!touch) { return; }
 
@@ -410,32 +396,34 @@
 		e.preventDefault();
 
 		event.targetTouches = e.targetTouches;
-		e.data.touch = touch;
-		e.data.timeStamp = e.timeStamp;
+		data.touch = touch;
+		data.timeStamp = e.timeStamp;
+
 		timer.kick();
 	}
 
 	function activeTouchend(e, data) {
-		var event = data.event,
-		    timer = data.timer,
-		    touch = identifiedTouch(e.changedTouches, event.identifier);
+		var target = data.target;
+		var event  = data.event;
+		var timer  = data.timer;
+		var touch  = identifiedTouch(e.changedTouches, event.identifier);
 
 		// This isn't the touch you're looking for.
 		if (!touch) { return; }
 
-		removeActiveTouch(event);
-		endEvent(e.target, timer);
+		removeActiveTouch(data);
+		endEvent(e.target, event, timer);
 	}
 
-	function removeActiveTouch(event) {
-		off(document, '.' + event.identifier, activeTouchmove);
-		off(document, '.' + event.identifier, activeTouchend);
+	function removeActiveTouch(data) {
+		off(document, touchevents.move, data.activeTouchmove);
+		off(document, touchevents.end, data.activeTouchend);
 	}
 
 
 	// Logic for triggering move and moveend events
 
-	function updateEvent(event, touch, timeStamp, timer) {
+	function updateEvent(event, touch, timeStamp) {
 		var time = timeStamp - event.timeStamp;
 
 		event.distX =  touch.pageX - event.startX;
@@ -495,19 +483,20 @@
 		}
 
 		if (e.identifier === undefined) {
-			// We're dealing with a mouse
+			// We're dealing with a mouse event.
 			// Stop clicks from propagating during a move
 			on(e.target, 'click', preventDefault);
 			on(document, mouseevents.move, activeMousemove, data);
 			on(document, mouseevents.end, activeMouseend, data);
 		}
 		else {
-			// We're dealing with a touch. Stop touchmove doing
-			// anything defaulty.
-			// Todo: we removed namespaces from these events - how do they
-			// get unbound?
-			on(document, touchevents.move, activeTouchmove, data);
-			on(document, touchevents.end, activeTouchend, data);
+			// In order to unbind correct handlers they have to be unique
+			data.activeTouchmove = function(e, data) { activeTouchmove(e, data); };
+			data.activeTouchend = function(e, data) { activeTouchend(e, data); };
+
+			// We're dealing with a touch.
+			on(document, touchevents.move, data.activeTouchmove, data);
+			on(document, touchevents.end, data.activeTouchend, data);
 		}
 	}
 

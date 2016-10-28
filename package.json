@@ -16,5 +16,11 @@
     "description": "jQuery special events movestart, move and moveend for tracking touch and mouse moves, throttled to browser animation frames, and exposing information about distance and velocity of fingers.",
     "keywords": ["touch","special","event","finger","move"],
     "homepage": "http://github.com/stephband/jquery.event.move",
-    "docs": "http://stephband.info/jquery.event.move"
+    "docs": "http://stephband.info/jquery.event.move",
+    "devDependencies": {
+        "eslint": "^3.6.1"
+    },
+    "scripts": {
+        "lint": "eslint js/jquery.event.move.js js/dom.event.move.js"
+    }
 }

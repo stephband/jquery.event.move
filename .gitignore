@@ -1,3 +1,5 @@
 /js/jquery-*
 .testswarm
 archived/
+node_modules/*
+.DS_Store

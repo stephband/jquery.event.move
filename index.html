@@ -95,7 +95,8 @@ title: jQuery.event.move
 {% highlight js %}
 var node = document.querySelector('.mydiv');
 
-// A movestart event must be bound and explicitly enabled
+// A movestart event must be bound and explicitly
+// enabled or other move events will not fire
 node.addEventListener('movestart', function(e) {
   e.enableMove();
 });
@@ -108,8 +109,10 @@ node.addEventListener('move', function(e) {
 node.addEventListener('moveend', function() {
   // move is complete!
 });{% endhighlight %}
+				<p><code>.enableMove()</code> is a necessary performance optimisation
+				(that works around the DOM's lack of event inspection).</p>
 			</div
-			
+
 			><div class="grid-1/2 block">
 				<h3 class="text-4">jQuery</h3>
 {% highlight js %}
@@ -122,7 +125,8 @@ jQuery('.mydiv')
   // move is complete!
 });{% endhighlight %}
 				<p>(jQuery's special event system does the work of enabling
-				move events on movestart.)</p>
+				move events so there is no need to explicitly bind to
+				<code>movestart</code>.)</p>
 			</div>
 		</div>
 
@@ -150,8 +154,8 @@ jQuery('.mydiv')
 		<h2 id="why2">What about drag events?</h2>
 		
 		<p>Move events are designed to compliment drag events, where the two have different meanings: drag events are for transferring data while move events are for making interactive interfaces.
-		That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one significant difference:
-		where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved.</p>
+		That said, <code>movestart</code>, <code>move</code> and <code>moveend</code> events deliberately echo <code>dragstart</code>, <code>drag</code> and <code>dragend</code> events, with one main difference:
+		where the <code>drag</code> event fires continuously whether you have moved the pointer or not, the <code>move</code> event fires only after the pointer has been moved, and only on animation frames.</p>
 		
 		<p>Where both a <code>dragstart</code> and any move event are bound to the same node, drag events are suppressed.</p>
 		
@@ -398,29 +402,27 @@ jQuery('.mydiv')
 			(function(){
 				// Test for correct deltaX and deltaY values
 
-				var distX = 0, distY = 0, pageX = 0, pageY = 0;
+				var distX = 0, distY = 0, pageX = 0, pageY = 0, startX = 0, startY = 0;
 
 				box
 				.on('movestart', function(e) {
+					startX = e.startX;
+					startY = e.startY;
 					distX = e.distX;
 					distY = e.distY;
 					pageX = e.pageX;
 					pageY = e.pageY;
+					console.log('movestart e.startX:', e.startX, 'e.distX:', e.distX, 'e.pageX:', e.pageX);
+					console.log('movestart e.startY:', e.startY, 'e.distY:', e.distY, 'e.pageY:', e.pageY);
 				})
-				.on('move', function(e){
+				.on('move movend', function(e){
 					// All these statements should be true
-					console.assert(e.deltaX === e.distX - distX, 'move property not correct');
-					console.assert(e.deltaY === e.distY - distY, 'move property not correct');
-					console.assert(e.deltaX === e.pageX - pageX, 'move property not correct');
-					console.assert(e.deltaY === e.pageY - pageY, 'move property not correct');
-
-					if ((e.deltaX === e.distX - distX) +
-					    (e.deltaY === e.distY - distY) +
-					    (e.deltaX === e.pageX - pageX) +
-					    (e.deltaY === e.pageY - pageY) !== 4) {
-						console.log('X', distX, e.distX, pageX, e.pageX, e.deltaX);
-						console.log('Y', distY, e.distY, pageY, e.pageY, e.deltaY);
-					}
+					console.assert(e.startX === startX, 'e.startX property not correct. Expected:', startX, 'Actual:', e.startX);
+					console.assert(e.startY === startY, 'e.startY property not correct. Expected:', startY, 'Actual:', e.startY);
+					console.assert(e.deltaX === e.distX - distX, 'e.deltaX property not correct. e.startX:', e.startX, 'e.distX:', e.distX, 'e.deltaX:', e.deltaX, 'e.pageX:', e.pageX);
+					console.assert(e.deltaY === e.distY - distY, 'e.deltaY property not correct. e.startY:', e.startY, 'e.distY:', e.distY, 'e.deltaY:', e.deltaY, 'e.pageY:', e.pageY);
+					console.assert(e.deltaX === e.pageX - pageX, 'e.pageX  property not correct. e.startX:', e.startX, 'e.distX:', e.distX, 'e.deltaX:', e.deltaX, 'e.pageX:', e.pageX);
+					console.assert(e.deltaY === e.pageY - pageY, 'e.pageY  property not correct. e.startY:', e.startY, 'e.distY:', e.distY, 'e.deltaY:', e.deltaY, 'e.pageY:', e.pageY);
 
 					distY = e.distY;
 					distX = e.distX;
