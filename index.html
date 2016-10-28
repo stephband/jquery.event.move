@@ -7,95 +7,20 @@ title: jQuery.event.move
 	<meta charset="utf-8" />
 	<meta name="author" content="">
 	<meta name="description" content="">
-	
-	<title>jQuery.event.move</title>
-	
-	<script>document.documentElement.className = 'js';</script>
-	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.5">
-	<!-- Force latest IE rendering engine & Chrome Frame -->
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<!-- Make IE recognise HTML5 elements for styling -->
-	<!--[if lte IE 8]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	
+
+	<title>jQuery.event.move</title>	
+	<script>document.documentElement.className = 'js';</script>
+
 	<link rel="icon" type="image/png" href="images/favicon.png" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-	
+
 	<link rel="stylesheet" type="text/css" href="http://stephband.info/css/template.min.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.info/css/template.theme.min.css" />
-	
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/site.layout.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/docs.classes.css" />
 	<link rel="stylesheet" type="text/css" href="http://stephband.github.com/css/site.highlight.light.css" />
-	
-	<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie.css" /><![endif]-->
-	<!--[if IE 8]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie8.css" /><![endif]-->
-	<!--[if IE 7]><link rel="stylesheet" type="text/css" href="http://stephband.github.com/template/css/template.ie7.css" /><![endif]-->
-	
-	<style>
-		.test_wrap {
-			height: 200px;
-			margin-bottom: 2em;
-		}
-
-		.test {
-			position: absolute;
-			left: 0;
-			top: 0;
-			background-color: red;
-			width: 200px;
-			height: 200px;
-		}
-
-		.resize, .rotate {
-		  position: absolute;
-		  width: 32px;
-		  height: 32px;
-		}
-		
-		.resize {
-		  bottom: 10px;
-		  right: 10px;
-		  background: yellow;
-		}
-		
-		.rotate {
-		  top: 10px;
-		  right: 10px;
-		  background: orange;
-		}
-		
-		.centre_mark,
-		.origin_mark,
-		.phantom_mark {
-			position: absolute;
-			top: 0;
-			left: 0;
-			background: orange;
-			width: 8px;
-			height: 8px;
-			margin-left: -4px;
-			margin-top: -4px;
-			-webkit-border-radius: 4px;
-			   -moz-border-radius: 4px;
-			        border-radius: 4px;
-			line-height: 8px;
-			text-transform: uppercase;
-			font-size: 10px;
-			font-family: Helvetica;
-			color: rgba(128,128,128,0.6);
-			text-indent: 8px;
-			border: 1px solid black;
-		}
-		
-		.origin_mark {
-			background: rgba(128,128,128,0.6);
-		}
-
-		.phantom_mark {
-			background: rgba(128,128,128,0.6);
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/demo.css" />
 </head>
 
 <body>
@@ -242,22 +167,19 @@ jQuery('.mydiv')
 		</div>
 	</footer>
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
+	<script src="js/jquery-3.1.1.js"></script>
 	<script src="js/jquery.event.move.js"></script>
 	<script>
-		Number.prototype.deg = function() { return this * 57.295779513; }
-		Number.prototype.rad = function() { return this / 57.295779513; }
-		Number.prototype.limit = function(min, max) { return this > max ? max : this < min ? min : this ; }
-		Number.prototype.wrap = function(min, max) { return (this < min ? max : min) + (this - min) % (max - min); }
+		function toDeg(n) { return n * 57.295779513; }
+		function toRad(n) { return n / 57.295779513; }
 
 		// FUNCTIONS
-		
-		// Converts cartesian [x, y] to polar [distance, angle] coordinates,
-		// downward, anti-clockwise, angle in radians.
-		
+				
 		var pi = Math.PI,
 				pi2 = pi * 2;
-		
+
+		// Converts cartesian [x, y] to polar [distance, angle] coordinates,
+		// downward, anti-clockwise, angle in radians.
 		function toPolar(cart) {
 			var x = cart[0],
 					y = cart[1];
@@ -269,7 +191,6 @@ jQuery('.mydiv')
 		}
 		
 		// Converts [distance, angle] vector to cartesian [x, y] coordinates.
-		
 		function toCartesian(vect) {
 			var d = vect[0],
 					a = vect[1];
@@ -279,28 +200,27 @@ jQuery('.mydiv')
 		}
 		
 		// log event objects
-		
 		function logEvent(e){ window.console && console.log(e.type, e); }
 		
 		jQuery(document)
 		//.bind('mousedown mouseup', logEvent)
 		.ready(function(){
-			var start,
-					box = jQuery('.test'),
-					resize = jQuery('.resize'),
-					rotate = jQuery('.rotate'),
-					centreMark = jQuery('.centre_mark'),
-					originMark = jQuery('.origin_mark');
-			
+			var start;
+			var box        = jQuery('.test');
+			var resize     = jQuery('.resize');
+			var rotate     = jQuery('.rotate');
+			var centreMark = jQuery('.centre_mark');
+			var originMark = jQuery('.origin_mark');
+
 			// Test setup and teardown with multiple binds and unbinds...
-			
+
 			box
-			.bind('movestart move moveend', logEvent)
-			.unbind('movestart')
-			.unbind('move')
-			.unbind('moveend')
+			//.on('movestart move moveend', logEvent)
+			//.off('movestart')
+			//.off('move')
+			//.off('moveend')
 			//.bind('movestart move moveend', logEvent)
-			.bind('movestart', function(e){
+			.on('movestart', function(e){
 				// Only listen to one finger
 				if (e.targetTouches && e.targetTouches.length > 1) {
 					e.preventDefault();
@@ -314,8 +234,10 @@ jQuery('.mydiv')
 					};
 				}
 			})
-			.bind('move', function(e){
+			.on('move', function(e){
 				if (e.target == e.currentTarget) {
+					// Test object
+
 					box.css({
 						left: start.x + e.distX,
 						top: start.y + e.distY
@@ -334,48 +256,16 @@ jQuery('.mydiv')
 					});
 				}
 			});
-			
-			(function(){
-				// Test for correct deltaX and deltaY values
-				
-				var distX = 0, distY = 0, pageX = 0, pageY = 0;
-				
-				box
-				.bind('movestart', function(e) {
-					distX = e.distX;
-					distY = e.distY;
-					pageX = e.pageX;
-					pageY = e.pageY;
-				})
-				.bind('move', function(e){
-					// All these statements should be true
-					console.log(e.deltaX === e.distX - distX,
-					            e.deltaY === e.distY - distY,
-					            e.deltaX === e.pageX - pageX,
-					            e.deltaY === e.pageY - pageY);
-					
-					if ((e.deltaX === e.distX - distX) +
-					    (e.deltaY === e.distY - distY) +
-					    (e.deltaX === e.pageX - pageX) +
-					    (e.deltaY === e.pageY - pageY) !== 4) {
-						console.log('X', distX, e.distX, pageX, e.pageX, e.deltaX);
-						console.log('Y', distY, e.distY, pageY, e.pageY, e.deltaY);
-					}
-					
-					distY = e.distY;
-					distX = e.distX;
-					pageX = e.pageX;
-					pageY = e.pageY;
-				});
-			})();
-			
+
+
+
 			var rotation = 0;
 			
 			(function(){
 				var start, rotatedOrigin, distX, distY;
 				
 				resize
-				.bind('movestart', function(e){
+				.on('movestart', function(e){
 					var polarOrigin;
 					
 					start = {
@@ -385,7 +275,7 @@ jQuery('.mydiv')
 					  height: box.height()
 					};
 				})
-				.bind('move', function(e){
+				.on('move', function(e){
 					var polarDelta = toPolar([e.distX, e.distY]),
 							normalisedDelta, originDelta, width, height;
 					
@@ -393,7 +283,7 @@ jQuery('.mydiv')
 					// on here without a pencil and paper. Sorry, but basically,
 					// we're undoing the rotate transform to work out where
 					// the rotated origin lies.
-					polarDelta[1] += rotation.rad();
+					polarDelta[1] += toRad(rotation);
 					normalisedDelta = toCartesian(polarDelta);
 					
 					width = start.width + normalisedDelta[0];
@@ -432,7 +322,7 @@ jQuery('.mydiv')
 				var centre, startRotate, startAngle, positionParent, offset;
 				
 				rotate
-				.bind('movestart', function(e){
+				.on('movestart', function(e){
 					
 					positionParent = box.parent();
 					offset = positionParent.offset();
@@ -457,12 +347,12 @@ jQuery('.mydiv')
 						top: centre.y
 					});
 				})
-				.bind('move', function(e){
+				.on('move', function(e){
 					var nowAngle = toPolar([e.pageX - offset.left - centre.x, e.pageY - offset.top - centre.y])[1],
 							deltaRotate = nowAngle - startAngle,
 							transform;
 					
-					rotation = parseInt(startRotate - deltaRotate.deg());
+					rotation = parseInt(startRotate - toDeg(deltaRotate));
 					transform = 'rotate(' + rotation + 'deg)';
 					
 					box.css({
@@ -470,6 +360,43 @@ jQuery('.mydiv')
 						WebkitTransform: transform,
 						MozTransform: transform
 					});
+				});
+			})();
+
+
+			// Test properties
+
+			(function(){
+				// Test for correct deltaX and deltaY values
+
+				var distX = 0, distY = 0, pageX = 0, pageY = 0;
+
+				box
+				.on('movestart', function(e) {
+					distX = e.distX;
+					distY = e.distY;
+					pageX = e.pageX;
+					pageY = e.pageY;
+				})
+				.on('move', function(e){
+					// All these statements should be true
+					console.assert(e.deltaX === e.distX - distX, 'move property not correct');
+					console.assert(e.deltaY === e.distY - distY, 'move property not correct');
+					console.assert(e.deltaX === e.pageX - pageX, 'move property not correct');
+					console.assert(e.deltaY === e.pageY - pageY, 'move property not correct');
+
+					if ((e.deltaX === e.distX - distX) +
+					    (e.deltaY === e.distY - distY) +
+					    (e.deltaX === e.pageX - pageX) +
+					    (e.deltaY === e.pageY - pageY) !== 4) {
+						console.log('X', distX, e.distX, pageX, e.pageX, e.deltaX);
+						console.log('Y', distY, e.distY, pageY, e.pageY, e.deltaY);
+					}
+
+					distY = e.distY;
+					distX = e.distX;
+					pageX = e.pageX;
+					pageY = e.pageY;
 				});
 			})();
 		});

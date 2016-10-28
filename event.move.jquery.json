@@ -6,9 +6,6 @@
         "name": "Stephen Band",
         "url": "http://stephband.info"
     },
-    "dependencies": {
-        "jquery": ">=1.7.0"
-    },
     "licenses": [{"url":"http://www.wtfpl.net/txt/copying/"}],
     "files": ["js/jquery.event.move.js"],
     "description": "jQuery special events movestart, move and moveend for tracking touch and mouse moves, throttled to browser animation frames, and exposing information about distance and velocity of fingers.",

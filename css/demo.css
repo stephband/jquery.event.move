@@ -1,0 +1,62 @@
+.test_wrap {
+	height: 200px;
+	margin-bottom: 2em;
+}
+
+.test {
+	position: absolute;
+	left: 0;
+	top: 0;
+	background-color: red;
+	width: 200px;
+	height: 200px;
+}
+
+.resize, .rotate {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+}
+
+.resize {
+  bottom: 10px;
+  right: 10px;
+  background: yellow;
+}
+
+.rotate {
+  top: 10px;
+  right: 10px;
+  background: orange;
+}
+
+.centre_mark,
+.origin_mark,
+.phantom_mark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: orange;
+	width: 8px;
+	height: 8px;
+	margin-left: -4px;
+	margin-top: -4px;
+	-webkit-border-radius: 4px;
+	   -moz-border-radius: 4px;
+	        border-radius: 4px;
+	line-height: 8px;
+	text-transform: uppercase;
+	font-size: 10px;
+	font-family: Helvetica;
+	color: rgba(128,128,128,0.6);
+	text-indent: 8px;
+	border: 1px solid black;
+}
+
+.origin_mark {
+	background: rgba(128,128,128,0.6);
+}
+
+.phantom_mark {
+	background: rgba(128,128,128,0.6);
+}
