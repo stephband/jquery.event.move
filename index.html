@@ -99,8 +99,8 @@ title: jQuery.event.move
 {% highlight js %}
 var node = document.querySelector('.mydiv');
 
-// A movestart event must be bound and explicitly
-// enabled or other move events will not fire
+// A movestart event must be bound
+// and explicitly enabled
 node.addEventListener('movestart', function(e) {
   e.enableMove();
 });
