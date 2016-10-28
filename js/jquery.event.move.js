@@ -30,7 +30,6 @@
 		fn();
 	}
 })(function(){
-
 	var assign = Object.assign || window.jQuery && jQuery.extend;
 
 	// Number of pixels a pressed pointer travels before movestart
