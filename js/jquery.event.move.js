@@ -94,12 +94,12 @@
 		types = types.split(rspaces);
 
 		var events = getEvents(node);
-		var handlers, type, i;
+		var i = types.length;
+		var handlers, type;
 
 		function handler(e) { fn(e, data); }
 
-		i = types.length;
-		while(i--) {
+		while (i--) {
 			type = types[i];
 			handlers = events[type] || (events[type] = []);
 			handlers.push([fn, handler]);
@@ -111,12 +111,12 @@
 		types = types.split(rspaces);
 
 		var events = getEvents(node);
-		var type, handlers, i, k;
+		var i = types.length;
+		var type, handlers, k;
 
 		if (!events) { return; }
 
-		i = types.length;
-		while(i--) {
+		while (i--) {
 			type = types[i];
 			handlers = events[type];
 			if (!handlers) { continue; }
@@ -525,12 +525,14 @@
 
 		handleObj.handler = function(e) {
 			// Copy move properties across from originalEvent
-			var property, i;
-			i = properties.length;
+			var i = properties.length;
+			var property;
+
 			while(i--) {
 				property = properties[i];
 				e[property] = e.originalEvent[property];
 			}
+
 			handler.apply(this, arguments);
 		};
 	}
