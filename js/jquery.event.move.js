@@ -195,7 +195,11 @@
 	}
 
 	function isIgnoreTag(e) {
-		return !!ignoreTags[e.target.tagName.toLowerCase()];
+	    var result = false;
+	    if(!!e.target.tagName) {
+            result = !!ignoreTags[e.target.tagName.toLowerCase()];
+        };
+		return result;
 	}
 
 	function isPrimaryButton(e) {
