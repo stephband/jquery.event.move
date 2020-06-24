@@ -195,11 +195,7 @@
 	}
 
 	function isIgnoreTag(e) {
-	    var result = false;
-	    if(!!e.target.tagName) {
-            result = !!ignoreTags[e.target.tagName.toLowerCase()];
-        };
-		return result;
+	    return !!e.target.tagName && !!ignoreTags[e.target.tagName.toLowerCase()];
 	}
 
 	function isPrimaryButton(e) {
