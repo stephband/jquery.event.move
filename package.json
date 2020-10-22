@@ -11,8 +11,8 @@
         "jquery": ">=1.7.0"
     },
     "licenses": [{"url":"http://www.wtfpl.net/txt/copying/"}],
-    "files": ["js/jquery.event.move.js"],
-    "main": "js/jquery.event.move.js",
+    "files": ["js/jquery.event.move.js", "js/jquery.event.move.min.js"],
+    "main": "js/jquery.event.move.min.js",
     "description": "DOM events movestart, move and moveend for tracking touch and mouse moves, throttled to browser animation frames, and exposing information about distance and velocity of fingers.",
     "keywords": ["touch","special","event","finger","move"],
     "homepage": "http://github.com/stephband/jquery.event.move",
