@@ -1,4 +1,4 @@
-#jquery.event.move
+# jquery.event.move
 
 Move events provide an easy way to set up press-move-release interactions on
 mouse and touch devices.
@@ -7,13 +7,13 @@ mouse and touch devices.
 underlying implementation is rewritten using vanilla DOM (where before it
 was jQuery special events only) – jQuery is no longer a requirement. However,
 if you do not have jQuery you will require a polyfill for Object.assign to
-support older browsers. I can recommend <a href="https://github.com/cruncher/object.assign">Object.assign polyfill</a> :)
+support older browsers. I can recommend [Object.assign polyfill](https://github.com/cruncher/object.assign) :)
 
-##Demo and docs
+## Demo and docs
 
-<a href="http://stephband.info/jquery.event.move/">stephband.info/jquery.event.move/</a>
+[stephband.info/jquery.event.move/](http://stephband.info/jquery.event.move/)
 
-##Move events
+## Move events
 
 <dl>
 	<dt>movestart</dt>
@@ -46,50 +46,53 @@ Move event objects are augmented with the properties:
 
 Use them in the same way as you bind to any other DOM event:
 
-    var node = document.querySelector('.mydiv');
-    
-    // A movestart event must be bound and explicitly
-    // enabled or other move events will not fire
-    node.addEventListener('movestart', function(e) {
-      e.enableMove();
-    });
-    
-    node.addEventListener('move', function(e) {
-      // move .mydiv horizontally
-      this.style.left = (e.startX + e.distX) + 'px';
-    });
-    
-    node.addEventListener('moveend', function() {
-      // move is complete!
-    });
+```js
+var node = document.querySelector('.mydiv');
+
+// A movestart event must be bound and explicitly
+// enabled or other move events will not fire
+node.addEventListener('movestart', function(e) {
+  e.enableMove();
+});
+
+node.addEventListener('move', function(e) {
+  // move .mydiv horizontally
+  this.style.left = (e.startX + e.distX) + 'px';
+});
+
+node.addEventListener('moveend', function() {
+  // move is complete!
+});
+```
 
 Or if you have jQuery in your project:
 
-    jQuery('.mydiv')
-    .on('move', function(e) {
-      // move .mydiv horizontally
-      jQuery(this).css({ left: e.startX + e.deltaX });
-    
-    }).bind('moveend', function() {
-      // move is complete!
-    });
+```js
+jQuery('.mydiv')
+.on('move', function(e) {
+  // move .mydiv horizontally
+  jQuery(this).css({ left: e.startX + e.deltaX });
+}).bind('moveend', function() {
+  // move is complete!
+});
+```
 
 (`.enableMove()` is a performance optimisation that avoids unnecessarily
 sending `move` when there are no listeners. jQuery's special event system
 does the work of enabling move events so using jQuery there is no need to
 explicitly bind to `movestart`.)
 
-To see an example of what could be done with it, <a href="http://stephband.info/jquery.event.move/">stephband.info/jquery.event.move/</a>
+To see an example of what could be done with it, [stephband.info/jquery.event.move/](http://stephband.info/jquery.event.move/)
 
-##CommonJS
+## CommonJS
 
 If you're using Browserify, or any other CommonJS-compatible module system,
 you can require this script by passing it your jQuery reference. For example,
 
-<pre><code class="js">
+```js
 require('./path/to/jquery.event.move.js')();
-</code></pre>
+```
 
-##Tweet me
+## Tweet me
 
-If you use move events on something interesting, tweet me <a href="http://twitter.com/stephband">@stephband</a>!
+If you use move events on something interesting, tweet me [@stephband](http://twitter.com/stephband)!
