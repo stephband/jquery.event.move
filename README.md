@@ -15,32 +15,37 @@ support older browsers. I can recommend [Object.assign polyfill](https://github.
 
 ## Move events
 
-<dl>
-	<dt>movestart</dt>
-	<dd>Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.</dd>
-	
-	<dt>move</dt>
-	<dd>Fired on every animation frame where a mousemove or touchmove has changed the cursor position.</dd>
-	
-	<dt>moveend</dt>
-	<dd>Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.</dd>
-</dl>
+### movestart
+
+Fired following mousedown or touchstart, when the pointer crosses a threshold distance from the position of the mousedown or touchstart.
+
+### move
+
+Fired on every animation frame where a mousemove or touchmove has changed the cursor position.
+
+### moveend
+
+Fired following mouseup or touchend, after the last move event, and in the case of touch events when the finger that started the move has been lifted.
+
+## Event parameters
 
 Move event objects are augmented with the properties:
 
-<dl>
-  <dt>e.pageX<br/>e.pageY</dt>
-  <dd>Current page coordinates of pointer.</dd>
-  
-  <dt>e.startX<br/>e.startY</dt>
-  <dd>Page coordinates the pointer had at movestart.</dd>
-  
-  <dt>e.deltaX<br/>e.deltaY</dt>
-  <dd>Distance the pointer has moved since movestart.</dd>
+### e.pageX / e.pageY
 
-  <dt>e.velocityX<br/>e.velocityY</dt>
-  <dd>Velocity in pixels/ms, averaged over the last few events.</dd>
-</dl>
+Current page coordinates of pointer.
+
+### e.startX / e.startY
+
+Page coordinates the pointer had at movestart.
+
+### e.deltaX / e.deltaY
+
+Distance the pointer has moved since movestart.
+
+### e.velocityX / e.velocityY
+
+Velocity in pixels/ms, averaged over the last few events.
 
 ## Usage
 
